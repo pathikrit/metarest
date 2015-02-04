@@ -28,10 +28,10 @@ With MetaRest, all you need to do is this:
 import com.github.pathikrit.MetaRest._
 
 @MetaRest case class User(
-  @Method(get)                  id            : Int,
-  @Method(get, post, Patch)     name          : String,
-  @Method(get, post)            email         : String,
-                                registeredOn  : DateTime
+  @get               id            : Int,
+  @get @post @patch  name          : String,
+  @get @post         email         : String,
+                     registeredOn  : DateTime
 )
 ```
 
@@ -54,6 +54,5 @@ trait UserRepo {
 ```
 
 TODO:
-* Tests for complex objects (generics/dependent types,extends etc)
 * Release to Sonatype + License
 * Option to generate Play json formatters

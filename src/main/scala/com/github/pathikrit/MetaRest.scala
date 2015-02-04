@@ -19,31 +19,39 @@ object MetaRest {
     import c.universe._
 
     def modifiedCompanion(compDeclOpt: Option[ModuleDef], className: TypeName, fields: List[ValDef]) = {
-      val result = fields flatMap {field =>
+      val result = fields.flatMap {field =>
         field.mods.annotations.collect {   // TODO: shorten this - make use of the fact that all extend sealed trait MethodAnnotations
-          case q"new get" => "get" -> field.name
-          case q"new put" => "put" -> field.name
-          case q"new post" => "post" -> field.name
-          case q"new patch" => "patch" -> field.name
+          case q"new get" => "get" -> field
+          case q"new put" => "put" -> field
+          case q"new post" => "post" -> field
+          case q"new patch" => "patch" -> field
         }
-      }
+      } groupBy (_._1) mapValues(_ map (_._2.duplicate))
 
-      val restModels = q"""
-        case class Get(id: Int)
-      """
+      println(result("get"))
+
+      // TODO: ----------------------------------------------------------------------------------------
+      val getRequestModel = q"""case class Get(id: Int, name: String, email: String)"""
+      val postRequestModel = q"""case class Post(name: String, email: String)"""
+      val patchRequestModel = q"""case class Patch(name: Option[String])"""
+      // ------------------------------------------------------------------------------------------------
 
       compDeclOpt map { compDecl =>
         val q"object $obj extends ..$bases { ..$body }" = compDecl
         q"""
           object $obj extends ..$bases {
             ..$body
-            $restModels
+            $getRequestModel
+            $postRequestModel
+            $patchRequestModel
           }
         """
       } getOrElse {
         q"""
           object ${className.toTermName} {
-            $restModels
+            $getRequestModel
+            $postRequestModel
+            $patchRequestModel
           }
          """
       }

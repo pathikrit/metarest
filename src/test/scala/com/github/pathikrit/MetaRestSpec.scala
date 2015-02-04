@@ -15,13 +15,14 @@ object MetaRestSpec extends Specification {
                             registeredOn  : Long
       )
 
-      User.Get(id = 0) must beAnInstanceOf[User.Get]
-//      User.Post(name = "Rick", email = "pathikritbhowmick@msn.com") must beAnInstanceOf[User.Post]
-//      User.Patch(name = None) must beAnInstanceOf[User.Patch]
-//      User.Patch(name = Some("Pathikrit")) must beAnInstanceOf[User.Patch]
+      User.Get(id = 0, name = "Rick", email = "pathikritbhowmick@msn.com") must beAnInstanceOf[User.Get]
+      User.Post(name = "Rick", email = "pathikritbhowmick@msn.com") must beAnInstanceOf[User.Post]
+      User.Patch(name = None) must beAnInstanceOf[User.Patch]
+      User.Patch(name = Some("Pathikrit")) must beAnInstanceOf[User.Patch]
     }
 
     "Work on complex models" in {
+      // Tests for complex objects (generics/dependent types,extends etc)
       // empty metarest, duplicate args to metarest
       todo
     }
