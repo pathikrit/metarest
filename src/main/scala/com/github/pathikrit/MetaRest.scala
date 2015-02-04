@@ -10,14 +10,14 @@ class MetaRest extends StaticAnnotation {
 
 object MetaRest extends Enumeration {
   type Verb = Value
-  val Get, Post, Patch, Put = Value
+  val get, post, patch, put = Value
 
   class Method(operations: Verb*) extends StaticAnnotation
 
   def impl(c: Context)(annottees: c.Expr[Any]*): c.Expr[Any] = {
     import c.universe._
 
-    def modifiedCompanion(compDeclOpt: Option[ModuleDef], className: TypeName) = {
+    def modifiedCompanion(compDeclOpt: Option[ModuleDef], className: TypeName, fields: List[ValDef]) = {
       compDeclOpt map { compDecl =>
         val q"object $obj extends ..$bases { ..$body }" = compDecl
         q"""
@@ -38,7 +38,7 @@ object MetaRest extends Enumeration {
     def modifiedDeclaration(classDecl: ClassDef, compDeclOpt: Option[ModuleDef] = None) = {
       val q"case class $className(..$fields) extends ..$bases { ..$body }" = classDecl
 
-      val compDecl = modifiedCompanion(compDeclOpt, className)
+      val compDecl = modifiedCompanion(compDeclOpt, className, fields)
 
       c.Expr(q"""
         $classDecl
