@@ -19,7 +19,6 @@ object MetaRest extends Enumeration {
 
     def modifiedCompanion(compDeclOpt: Option[ModuleDef], className: TypeName) = {
       compDeclOpt map { compDecl =>
-        // Add the formatter to the existing companion object
         val q"object $obj extends ..$bases { ..$body }" = compDecl
         q"""
           object $obj extends ..$bases {
@@ -28,11 +27,10 @@ object MetaRest extends Enumeration {
           }
         """
       } getOrElse {
-        // Create a companion object with the formatter
         q"""
-            object ${className.toTermName} {
-              case class Get(id: Int)
-            }
+          object ${className.toTermName} {
+            case class Get(id: Int)
+          }
          """
       }
     }
@@ -53,6 +51,5 @@ object MetaRest extends Enumeration {
       case (classDecl: ClassDef) :: (compDecl: ModuleDef) :: Nil => modifiedDeclaration(classDecl, Some(compDecl))
       case _ => c.abort(c.enclosingPosition, "Invalid annottee")
     }
-
   }
 }

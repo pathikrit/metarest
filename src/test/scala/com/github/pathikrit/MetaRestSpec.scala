@@ -7,13 +7,13 @@ object MetaRestSpec extends Specification {
 
   "MetaRest" should {
     @MetaRest case class User(
-      @Method(Get)                  id         : Int,
-      @Method(Get, Post, Patch)     name       : String,
-      @Method(Get, Post)            email      : String,
-                                    createdOn  : Long
+      @Method(Get)                  id            : Int,
+      @Method(Get, Post, Patch)     name          : String,
+      @Method(Get, Post)            email         : String,
+                                    registeredOn  : Long
     )
     "Generate Get, Post, Patch, Put models" in {
-      User.Get(0) mustBe  anInstanceOf[User.Get]
+      User.Get(0) mustBe anInstanceOf[User]
     }
   }
 }
