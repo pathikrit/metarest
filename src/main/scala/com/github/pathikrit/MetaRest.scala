@@ -22,19 +22,18 @@ object MetaRest {
       val result = fields.flatMap {field =>
         field.mods.annotations.collect {   // TODO: shorten this - make use of the fact that all extend sealed trait MethodAnnotations
           case q"new get" => "get" -> field
-          case q"new put" => "put" -> field
           case q"new post" => "post" -> field
+          case q"new put" => "put" -> field
           case q"new patch" => "patch" -> field
         }
-      } groupBy (_._1) mapValues(_ map (_._2.duplicate))
+      } groupBy (_._1) mapValues(_ map (_._2.duplicate)) withDefaultValue Nil
 
-      println(result("get"))
+      val(gets, posts, puts, patch) = (result("get"), result("post"), result("put"), result("patch"))
 
-      // TODO: ----------------------------------------------------------------------------------------
-      val getRequestModel = q"""case class Get(id: Int, name: String, email: String)"""
-      val postRequestModel = q"""case class Post(name: String, email: String)"""
-      val patchRequestModel = q"""case class Patch(name: Option[String])"""
-      // ------------------------------------------------------------------------------------------------
+      val getRequestModel = q"""case class Get(..$gets)"""
+      val postRequestModel = q"""case class Post(..$posts)"""
+      val putRequestModel = q"""case class Put(..$puts)"""
+      val patchRequestModel = q"""case class Patch(name: Option[String])"""   //TODO!Support
 
       compDeclOpt map { compDecl =>
         val q"object $obj extends ..$bases { ..$body }" = compDecl
@@ -43,6 +42,7 @@ object MetaRest {
             ..$body
             $getRequestModel
             $postRequestModel
+            $putRequestModel
             $patchRequestModel
           }
         """
@@ -51,6 +51,7 @@ object MetaRest {
           object ${className.toTermName} {
             $getRequestModel
             $postRequestModel
+            $putRequestModel
             $patchRequestModel
           }
          """

@@ -39,7 +39,7 @@ The above block would generate code essentially looking like this:
 ```scala
 object User {
   case class Get(id: Int, name: String, email: String)
-  case class Post(name: String, email: String
+  case class Post(name: String, email: String)
   case class Patch(name: Option[String])
 }
 ```

@@ -17,6 +17,7 @@ object MetaRestSpec extends Specification {
 
       User.Get(id = 0, name = "Rick", email = "pathikritbhowmick@msn.com") must beAnInstanceOf[User.Get]
       User.Post(name = "Rick", email = "pathikritbhowmick@msn.com") must beAnInstanceOf[User.Post]
+      User.Put() must beAnInstanceOf[User.Put]
       User.Patch(name = None) must beAnInstanceOf[User.Patch]
       User.Patch(name = Some("Pathikrit")) must beAnInstanceOf[User.Patch]
     }
