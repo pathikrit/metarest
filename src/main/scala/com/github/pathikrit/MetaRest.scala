@@ -28,12 +28,15 @@ object MetaRest {
         }
       } groupBy (_._1) mapValues(_ map (_._2.duplicate)) withDefaultValue Nil
 
-      val(gets, posts, puts, patch) = (result("get"), result("post"), result("put"), result("patch"))
+      val(gets, posts, puts) = (result("get"), result("post"), result("put"))
+      val patches = result("patch") map {
+        case q"$accessor val $vname: $tpe" => q"$accessor val $vname: Option[$tpe]"
+      }
 
-      val getRequestModel = q"""case class Get(..$gets)"""
-      val postRequestModel = q"""case class Post(..$posts)"""
-      val putRequestModel = q"""case class Put(..$puts)"""
-      val patchRequestModel = q"""case class Patch(name: Option[String])"""   //TODO!Support
+      val getRequestModel = q"case class Get(..$gets)"
+      val postRequestModel = q"case class Post(..$posts)"
+      val putRequestModel = q"case class Put(..$puts)"
+      val patchRequestModel = q"case class Patch(..$patches)"
 
       compDeclOpt map { compDecl =>
         val q"object $obj extends ..$bases { ..$body }" = compDecl

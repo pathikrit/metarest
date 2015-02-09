@@ -24,7 +24,8 @@ object MetaRestSpec extends Specification {
 
     "Work on complex models" in {
       // Tests for complex objects (generics/dependent types,extends etc)
-      // empty metarest, duplicate args to metarest
+      // empty metarest, duplicate args to metarest, metarest.Get
+      // vals and vars
       todo
     }
   }
