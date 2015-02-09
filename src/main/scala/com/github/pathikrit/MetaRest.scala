@@ -37,29 +37,25 @@ object MetaRest {
         case q"$accessor val $vname: $tpe" => q"$accessor val $vname: Option[$tpe]"
       }
 
-      val getModel = q"case class Get(..$gets)"
-      val postModel = q"case class Post(..$posts)"
-      val putModel = q"case class Put(..$puts)"
-      val patchModel = q"case class Patch(..$patches)"
+      val requestModels = List(
+        q"case class Get(..$gets)",
+        q"case class Post(..$posts)",
+        q"case class Put(..$puts)",
+        q"case class Patch(..$patches)"
+      )
 
       compDeclOpt map { compDecl =>
         val q"object $obj extends ..$bases { ..$body }" = compDecl
         q"""
           object $obj extends ..$bases {
             ..$body
-            $getModel
-            $postModel
-            $putModel
-            $patchModel
+            ..$requestModels
           }
         """
       } getOrElse {
         q"""
           object ${className.toTermName} {
-            $getModel
-            $postModel
-            $putModel
-            $patchModel
+            ..$requestModels
           }
          """
       }

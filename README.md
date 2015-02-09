@@ -21,7 +21,7 @@ case class UserPost(name: String, email: String)
 case class UserPatch(name: Option[String])
 ```
 
-That is a lot of boilerplate! Keeping all that in sync with your business model and/or adding/removing fields quickly becomes difficult and cumbersome for more complicated models.
+That is a lot of boilerplate! Keeping all these request models in sync with your business model and/or adding/removing fields quickly becomes difficult and cumbersome for more complicated models.
 With MetaRest, all you need to do is this:
 
 ```scala
