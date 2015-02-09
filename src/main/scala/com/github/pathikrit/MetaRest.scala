@@ -19,43 +19,43 @@ object MetaRest {
     import c.universe._
 
     def modifiedCompanion(compDeclOpt: Option[ModuleDef], className: TypeName, fields: List[ValDef]) = {
-      val result = fields.flatMap {field =>
-        field.mods.annotations.collect {   // TODO: shorten this - make use of the fact that all extend sealed trait MethodAnnotations
-          case q"new get" => "get" -> field
-          case q"new post" => "post" -> field
-          case q"new put" => "put" -> field
-          case q"new patch" => "patch" -> field
-        }
-      } groupBy (_._1) mapValues(_ map (_._2.duplicate)) withDefaultValue Nil
+      val result = fields flatMap {field =>
+        field.mods.annotations.collect {
+          case q"new get" => "get"
+          case q"new post" => "post"
+          case q"new put" => "put"
+          case q"new patch" => "patch"
+        } map (_ -> field.duplicate)
+      } groupBy (_._1) mapValues(_ map (_._2)) withDefaultValue Nil
 
       val(gets, posts, puts) = (result("get"), result("post"), result("put"))
-      val patches = result("patch") map {
+      val patches = result("patch") collect {
         case q"$accessor val $vname: $tpe" => q"$accessor val $vname: Option[$tpe]"
       }
 
-      val getRequestModel = q"case class Get(..$gets)"
-      val postRequestModel = q"case class Post(..$posts)"
-      val putRequestModel = q"case class Put(..$puts)"
-      val patchRequestModel = q"case class Patch(..$patches)"
+      val getModel = q"case class Get(..$gets)"
+      val postModel = q"case class Post(..$posts)"
+      val putModel = q"case class Put(..$puts)"
+      val patchModel = q"case class Patch(..$patches)"
 
       compDeclOpt map { compDecl =>
         val q"object $obj extends ..$bases { ..$body }" = compDecl
         q"""
           object $obj extends ..$bases {
             ..$body
-            $getRequestModel
-            $postRequestModel
-            $putRequestModel
-            $patchRequestModel
+            $getModel
+            $postModel
+            $putModel
+            $patchModel
           }
         """
       } getOrElse {
         q"""
           object ${className.toTermName} {
-            $getRequestModel
-            $postRequestModel
-            $putRequestModel
-            $patchRequestModel
+            $getModel
+            $postModel
+            $putModel
+            $patchModel
           }
          """
       }
