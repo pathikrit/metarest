@@ -24,12 +24,9 @@ object MetaRest {
 
     def modifiedCompanion(compDeclOpt: Option[ModuleDef], className: TypeName, fields: List[ValDef]) = {
       val annotatedFields = fields flatMap {field =>
-        field.mods.annotations.collect {
-          case q"new get" => "get"
-          case q"new post" => "post"
-          case q"new put" => "put"
-          case q"new patch" => "patch"
-        } map (_ -> field.duplicate)
+        field.mods.annotations collect {
+          case q"new $annotation" => annotation.toString -> field.duplicate
+        }
       }
 
       val fieldLookup =  annotatedFields.toMultiMap withDefaultValue Nil
