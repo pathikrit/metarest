@@ -15,21 +15,28 @@ object MetaRest {
   class post extends MethodAnnotations
   class patch extends MethodAnnotations
 
+  private implicit class Pairs[A, B](p: List[(A, B)]) {
+    def toMultiMap: Map[A, List[B]] = p.groupBy(_._1).mapValues(_.map(_._2))
+  }
+
   def impl(c: Context)(annottees: c.Expr[Any]*): c.Expr[Any] = {
     import c.universe._
 
     def modifiedCompanion(compDeclOpt: Option[ModuleDef], className: TypeName, fields: List[ValDef]) = {
-      val result = fields flatMap {field =>
+      val annotatedFields = fields flatMap {field =>
         field.mods.annotations.collect {
           case q"new get" => "get"
           case q"new post" => "post"
           case q"new put" => "put"
           case q"new patch" => "patch"
         } map (_ -> field.duplicate)
-      } groupBy (_._1) mapValues(_ map (_._2)) withDefaultValue Nil
+      }
 
-      val(gets, posts, puts) = (result("get"), result("post"), result("put"))
-      val patches = result("patch") collect {
+      val fieldLookup =  annotatedFields.toMultiMap withDefaultValue Nil
+
+      val(gets, posts, puts) = (fieldLookup("get"), fieldLookup("post"), fieldLookup("put"))
+
+      val patches = fieldLookup("patch") collect {
         case q"$accessor val $vname: $tpe" => q"$accessor val $vname: Option[$tpe]"
       }
 
