@@ -1,5 +1,6 @@
 [![Build Status](https://travis-ci.org/pathikrit/metarest.png)](http://travis-ci.org/pathikrit/metarest)
 [![Dependency Status](https://www.versioneye.com/user/projects/54d0f1bc3ca08495310000a2/badge.svg?style=flat)](https://www.versioneye.com/user/projects/54d0f1bc3ca08495310000a2)
+[![Codacy Badge](https://www.codacy.com/project/badge/8996098c68e44d0c8e6150c357f60f5d)](https://www.codacy.com/public/pathikrit/metarest)
 
 Auto generate HTTP REST request models for your business layer.
 
@@ -56,3 +57,4 @@ trait UserRepo {
 TODO:
 * Release to Sonatype + License
 * Option to generate Play json formatters
+* Code coverage

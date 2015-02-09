@@ -15,7 +15,7 @@ object MetaRest {
   class post extends MethodAnnotations
   class patch extends MethodAnnotations
 
-  private implicit class Pairs[A, B](p: List[(A, B)]) {
+  private[this] implicit class Pairs[A, B](p: List[(A, B)]) {
     def toMultiMap: Map[A, List[B]] = p.groupBy(_._1).mapValues(_.map(_._2))
   }
 
@@ -29,9 +29,9 @@ object MetaRest {
         }
       }
 
-      val fieldLookup =  annotatedFields.toMultiMap withDefaultValue Nil
+      val fieldLookup = annotatedFields.toMultiMap withDefaultValue Nil
 
-      val(gets, posts, puts) = (fieldLookup("get"), fieldLookup("post"), fieldLookup("put"))
+      val (gets, posts, puts) = (fieldLookup("get"), fieldLookup("post"), fieldLookup("put"))
 
       val patches = fieldLookup("patch") collect {
         case q"$accessor val $vname: $tpe" => q"$accessor val $vname: Option[$tpe]"
