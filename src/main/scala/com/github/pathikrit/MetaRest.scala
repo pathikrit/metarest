@@ -22,7 +22,7 @@ object MetaRest {
   def impl(c: blackbox.Context)(annottees: c.Expr[Any]*): c.Expr[Any] = {
     import c.universe._
 
-    def modifiedCompanion(compDeclOpt: Option[ModuleDef], className: TypeName, fields: List[ValDef]) = {
+    def generateModels(fields: List[ValDef]) = {
       val annotatedFields = fields flatMap {field =>
         field.mods.annotations collect {
           case q"new $annotation" => annotation.toString -> field.duplicate
@@ -37,11 +37,17 @@ object MetaRest {
         case q"$accessor val $vname: $tpe" => q"$accessor val $vname: Option[$tpe] = None"
       }
 
-      val requestModels = Map("Get" -> gets, "Post" -> posts, "Put" -> puts, "Patch" -> patches) collect {
-        case (name, modelFields) if modelFields.nonEmpty => q"@com.kifi.macros.jsonstrict case class ${TypeName(name)}(..$modelFields)"
+      Map("Get" -> gets, "Post" -> posts, "Put" -> puts, "Patch" -> patches) collect {
+        case (name, reqFields) if reqFields.nonEmpty => q"@com.kifi.macros.jsonstrict case class ${TypeName(name)}(..$reqFields)"
       }
+    }
 
-      compDeclOpt map { compDecl =>
+    def modifiedDeclaration(classDecl: ClassDef, compDeclOpt: Option[ModuleDef] = None) = {
+      val q"case class $className(..$fields) extends ..$bases { ..$body }" = classDecl
+
+      val requestModels = generateModels(fields)
+
+      val compDecl = compDeclOpt map { compDecl =>
         val q"object $obj extends ..$bases { ..$body }" = compDecl
         q"""
           object $obj extends ..$bases {
@@ -56,12 +62,6 @@ object MetaRest {
           }
          """
       }
-    }
-
-    def modifiedDeclaration(classDecl: ClassDef, compDeclOpt: Option[ModuleDef] = None) = {
-      val q"case class $className(..$fields) extends ..$bases { ..$body }" = classDecl
-
-      val compDecl = modifiedCompanion(compDeclOpt, className, fields)
 
       c.Expr(q"""
         $classDecl

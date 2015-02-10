@@ -1,6 +1,4 @@
 [![Build Status](https://travis-ci.org/pathikrit/metarest.png)](http://travis-ci.org/pathikrit/metarest)
-[![Dependency Status](https://www.versioneye.com/user/projects/54d0f1bc3ca08495310000a2/badge.svg?style=flat)](https://www.versioneye.com/user/projects/54d0f1bc3ca08495310000a2)
-[![Codacy Badge](https://www.codacy.com/project/badge/8996098c68e44d0c8e6150c357f60f5d)](https://www.codacy.com/public/pathikrit/metarest)
 
 Auto generate HTTP REST request models for your business layer.
 
@@ -10,7 +8,7 @@ Let's say you have the following `User` model in your business layer:
 case class User(id: Int, name: String, email: String, registeredOn: DateTime)
 ```
 
-But, now you want to create well-formed models to describe the requests/response of your HTTP REST APIs:
+But, now you want to create well-formed models to describe the requests/responses of your HTTP REST APIs:
 ```scala
 // Response to GET /users/$id (Retrieve an existing user)
 case class UserGet(id: Int, name: String, email: String)
@@ -45,7 +43,7 @@ object User {
 }
 ```
 
-Now, you can have well defined repo layer:
+Now, you can have a well defined CRUD interface:
 ```scala
 trait UserRepo {
   def get(id: Int): User.Get
@@ -78,7 +76,7 @@ SBT: In your `build.sbt`, add the following entries:
 ```scala
 resolvers += Resolver.bintrayRepo("pathikrit", "maven")
 
-libraryDependencies += "com.github.pathikrit" %% "metarest" % 0.1.0
+libraryDependencies += "com.github.pathikrit" %% "metarest" % 0.2.0
 
 addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0-M5" cross CrossVersion.full)
 ```
