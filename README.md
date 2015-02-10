@@ -54,7 +54,16 @@ trait UserRepo {
 }
 ```
 
+Usage:
+In your `build.sbt`, add the following lines:
+
+```scala
+resolvers += Resolver.bintrayRepo("pathikrit", "maven")
+
+libraryDependencies += "com.github.pathikrit" %% "metarest" % 0.1.0
+```
+
+
 TODO:
-* Release to Sonatype + License
 * Option to generate Play json formatters
 * Code coverage
