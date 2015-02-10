@@ -45,13 +45,29 @@ object User {
 }
 ```
 
-Now you can have well defined repo layer:
+Now, you can have well defined repo layer:
 ```scala
 trait UserRepo {
   def get(id: Int): User.Get
   def create(request: User.Post): User.Get
-  def patch(id: Int, request: User.Patch): User.Get
+  def update(id: Int, request: User.Patch): User.Get
 }
+```
+
+MetaRest also automatically generates Play's JSON formatters for all the models using
+the [json-annotation](https://github.com/kifi/json-annotation) macro:
+
+```scala
+import play.api.libs.json.Json
+
+val jsonStr = """{"id":0,"name":"Rick","email":"awesome@msn.com"}"""
+
+val request = Json.parse(jsonStr).as[User.Get]
+val json = Json.toJson(request)
+
+println(request)
+println(json)
+assert(json.toString == jsonStr)
 ```
 
 SBT: In your `build.sbt`, add the following entries:
@@ -62,20 +78,6 @@ resolvers += Resolver.bintrayRepo("pathikrit", "maven")
 libraryDependencies += "com.github.pathikrit" %% "metarest" % 0.1.0
 
 addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0-M5" cross CrossVersion.full)
-```
-
-MetaRest also automatically generates Play's JSON formatters all the generated models using
-the [json-annotation](https://github.com/kifi/json-annotation) macro library itself:
-
-```scala
-import play.api.libs.json.Json
-
-val jsonStr = """{"id":0,"name":"Rick","email":"awesome@msn.com"}"""
-val request = Json.parse(jsonStr).as[User.Get]
-val json = Json.toJson(request)
-println(request)
-println(json)
-assert(json.toString == jsonStr)
 ```
 
 The latest published version can be found here:

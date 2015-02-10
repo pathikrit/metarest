@@ -37,14 +37,8 @@ object MetaRest {
         case q"$accessor val $vname: $tpe" => q"$accessor val $vname: Option[$tpe] = None"
       }
 
-      def generateModel(name: String, fields: List[ValDef]) = if (fields.nonEmpty) {
-        Some(q"@com.kifi.macros.json case class ${TypeName(name)}(..$fields)")
-      } else {
-        None
-      }
-
-      val requestModels = List("Get" -> gets, "Post" -> posts, "Put" -> puts, "Patch" -> patches) flatMap {
-        case (name, fields) => generateModel(name, fields)
+      val requestModels = Map("Get" -> gets, "Post" -> posts, "Put" -> puts, "Patch" -> patches) collect {
+        case (name, modelFields) if modelFields.nonEmpty => q"@com.kifi.macros.json case class ${TypeName(name)}(..$modelFields)"
       }
 
       compDeclOpt map { compDecl =>
