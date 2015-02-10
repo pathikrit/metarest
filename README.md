@@ -23,8 +23,8 @@ case class UserPatch(name: Option[String])
 ```
 
 That is a lot of boilerplate! Keeping all these request models in sync with your business model and/or adding/removing fields quickly becomes difficult and cumbersome for more complicated models.
-With MetaRest, all you need to do is this:
 
+With MetaRest, all you need to do:
 ```scala
 import com.github.pathikrit.MetaRest._
 
@@ -60,10 +60,13 @@ the [json-annotation](https://github.com/kifi/json-annotation) macro:
 ```scala
 import play.api.libs.json.Json
 
-val jsonStr = """{"id":0,"name":"Rick","email":"awesome@msn.com"}"""
-
-val request = Json.parse(jsonStr).as[User.Get]
-val json = Json.toJson(request)
+val jsonStr = """{
+  "id": 0,
+  "name": "Rick",
+  "email": "awesome@msn.com"
+}"""
+val request: User.Get = Json.parse(jsonStr).as[User.Get]
+val json: JsValue = Json.toJson(request)
 
 println(request)
 println(json)

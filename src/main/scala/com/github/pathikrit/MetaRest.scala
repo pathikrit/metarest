@@ -19,7 +19,7 @@ object MetaRest {
     def toMultiMap: Map[A, List[B]] = p.groupBy(_._1).mapValues(_.map(_._2))
   }
 
-  def impl(c: Context)(annottees: c.Expr[Any]*): c.Expr[Any] = {
+  def impl(c: blackbox.Context)(annottees: c.Expr[Any]*): c.Expr[Any] = {
     import c.universe._
 
     def modifiedCompanion(compDeclOpt: Option[ModuleDef], className: TypeName, fields: List[ValDef]) = {
@@ -38,7 +38,7 @@ object MetaRest {
       }
 
       val requestModels = Map("Get" -> gets, "Post" -> posts, "Put" -> puts, "Patch" -> patches) collect {
-        case (name, modelFields) if modelFields.nonEmpty => q"@com.kifi.macros.json case class ${TypeName(name)}(..$modelFields)"
+        case (name, modelFields) if modelFields.nonEmpty => q"@com.kifi.macros.jsonstrict case class ${TypeName(name)}(..$modelFields)"
       }
 
       compDeclOpt map { compDecl =>

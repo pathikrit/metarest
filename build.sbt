@@ -12,14 +12,14 @@ scalaVersion := "2.11.5"
 
 scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature", "-language:_")
 
+resolvers += Resolver.sonatypeRepo("releases")
+
 libraryDependencies ++= Seq(
   "org.scala-lang" % "scala-reflect" % scalaVersion.value,
   "com.kifi" %% "json-annotation" % "0.2",
   "com.typesafe.play" %% "play-json" % "2.4.0-M2",
   "org.specs2" %% "specs2" % "2.4.1" % "test"
 )
-
-resolvers += Resolver.sonatypeRepo("releases")
 
 addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0-M5" cross CrossVersion.full)
 
