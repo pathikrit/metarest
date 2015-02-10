@@ -1,6 +1,8 @@
-[![Build Status](https://travis-ci.org/pathikrit/metarest.png)](http://travis-ci.org/pathikrit/metarest)
+[![Build Status](https://travis-ci.org/pathikrit/metarest.png?branch=master)](http://travis-ci.org/pathikrit/metarest)
 
-Auto generate HTTP REST request models for your business layer.
+MetaRest
+--------
+Use Scala macros to generate your RESTy models
 
 Let's say you have the following `User` model in your business layer:
 
