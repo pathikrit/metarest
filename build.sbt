@@ -8,7 +8,7 @@ scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature", "-language:_")
 
 libraryDependencies ++= Seq(
   "org.scala-lang" % "scala-reflect" % scalaVersion.value,
-  "org.specs2" %% "specs2" % "2.4.16" % "test"
+  "org.specs2" %% "specs2" % "2.4.1" % "test"
 )
 
 resolvers += Resolver.sonatypeRepo("releases")
