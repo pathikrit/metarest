@@ -12,14 +12,14 @@ scalaVersion := "2.11.5"
 
 crossScalaVersions := Seq("2.10.2", "2.10.3", "2.10.4", "2.11.0", "2.11.1", "2.11.2", "2.11.4", "2.11.5")
 
-scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature", "-language:_")
+scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature", "-language:experimental.macros")
 
 resolvers ++= Seq(
   Resolver.sonatypeRepo("releases"),
   Resolver.typesafeRepo("releases")
 )
 
-libraryDependencies <+= (scalaVersion)("org.scala-lang" % "scala-reflect" % _)
+libraryDependencies <+= scalaVersion("org.scala-lang" % "scala-reflect" % _)
 
 libraryDependencies ++= (
   if (scalaVersion.value.startsWith("2.10")) List("org.scalamacros" %% "quasiquotes" % "2.0.1") else Nil
@@ -27,11 +27,11 @@ libraryDependencies ++= (
 
 libraryDependencies ++= Seq(
   "com.kifi" %% "json-annotation" % "0.2" % Test,
-  "com.typesafe.play" %% "play-json" % "2.3.1" % Test,
+  "com.typesafe.play" %% "play-json" % "2.3.7" % Test,
   "org.specs2" %% "specs2" % "2.4.1" % Test
 )
 
-unmanagedSourceDirectories in Compile <+= (sourceDirectory in Compile, scalaBinaryVersion){
+unmanagedSourceDirectories in Compile <+= (sourceDirectory in Compile, scalaBinaryVersion) {
   (sourceDir, version) => sourceDir / (if (version.startsWith("2.10")) "scala_2.10" else "scala_2.11")
 }
 
