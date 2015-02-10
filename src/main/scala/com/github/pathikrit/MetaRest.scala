@@ -36,8 +36,8 @@ object MetaRest {
       }
 
       Map("Get" -> gets, "Post" -> posts, "Put" -> puts, "Patch" -> patches) collect {
-        case (name, reqFields) if reqFields.nonEmpty => q"@com.kifi.macros.jsonstrict case class ${TypeName(name)}(..$reqFields)"
-      }
+        case (name, reqFields) if reqFields.nonEmpty => q"@com.kifi.macros.json case class ${TypeName(name)}(..$reqFields)"
+      } //TODO: Switch back to jsonstrict once this is fixed: https://github.com/kifi/json-annotation
     }
 
     def modifiedDeclaration(classDecl: ClassDef, compDeclOpt: Option[ModuleDef] = None) = {

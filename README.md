@@ -76,7 +76,11 @@ SBT: In your `build.sbt`, add the following entries:
 ```scala
 resolvers += Resolver.bintrayRepo("pathikrit", "maven")
 
-libraryDependencies += "com.github.pathikrit" %% "metarest" % 0.2.0
+libraryDependencies ++= Seq(
+  "com.github.pathikrit" %% "metarest" % 0.2.1,
+  "com.kifi" %% "json-annotation" % "0.1",
+  "com.typesafe.play" %% "play-json" % "2.3.7"
+)
 
 addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0-M5" cross CrossVersion.full)
 ```
