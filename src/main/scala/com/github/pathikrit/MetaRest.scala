@@ -34,15 +34,18 @@ object MetaRest {
       val (gets, posts, puts) = (fieldLookup("get"), fieldLookup("post"), fieldLookup("put"))
 
       val patches = fieldLookup("patch") collect {
-        case q"$accessor val $vname: $tpe" => q"$accessor val $vname: Option[$tpe]"
+        case q"$accessor val $vname: $tpe" => q"$accessor val $vname: Option[$tpe] = None"
       }
 
-      val requestModels = List(
-        q"case class Get(..$gets)",
-        q"case class Post(..$posts)",
-        q"case class Put(..$puts)",
-        q"case class Patch(..$patches)"
-      )
+      def generateModel(name: String, fields: List[ValDef]) = if (fields.nonEmpty) {
+        Some(q"@com.kifi.macros.json case class ${TypeName(name)}(..$fields)")
+      } else {
+        None
+      }
+
+      val requestModels = List("Get" -> gets, "Post" -> posts, "Put" -> puts, "Patch" -> patches) flatMap {
+        case (name, fields) => generateModel(name, fields)
+      }
 
       compDeclOpt map { compDecl =>
         val q"object $obj extends ..$bases { ..$body }" = compDecl

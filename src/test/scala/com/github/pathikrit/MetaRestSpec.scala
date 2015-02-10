@@ -4,10 +4,12 @@ import org.specs2.mutable.Specification
 
 object MetaRestSpec extends Specification {
   import com.github.pathikrit.MetaRest._
+  import play.api.libs.json.{Json, Reads, Writes}
+
+  def jsonRoundTrip[A: Reads : Writes](model: A) = Json.parse(Json.toJson(model).toString()).as[A] mustEqual model
 
   "MetaRest" should {
-
-    "Generate Get, Post, Patch, Put models" in {
+    "Generate Get, Post, Patch, Put models with JSON capabilities" in {
       @MetaRest case class User(
         @get                id            : Int,
         @get @post @patch   name          : String,
@@ -15,11 +17,10 @@ object MetaRestSpec extends Specification {
                             registeredOn  : Long
       )
 
-      User.Get(id = 0, name = "Rick", email = "awesome@msn.com") must beAnInstanceOf[User.Get]
-      User.Post(name = "Rick", email = "awesome@msn.com") must beAnInstanceOf[User.Post]
-      User.Put() must beAnInstanceOf[User.Put]
-      User.Patch(name = None) must beAnInstanceOf[User.Patch]
-      User.Patch(name = Some("Pathikrit")) must beAnInstanceOf[User.Patch]
+      jsonRoundTrip(User.Get(id = 0, name = "Rick", email = "awesome@msn.com"))
+      jsonRoundTrip(User.Post(name = "Rick", email = "awesome@msn.com"))
+      //TODO Check User.Put() does not exist
+      jsonRoundTrip(User.Patch(name = Some("Pathikrit")))
     }
 
     "Work on complex models" in {

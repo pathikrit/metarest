@@ -10,7 +10,7 @@ Let's say you have the following `User` model in your business layer:
 case class User(id: Int, name: String, email: String, registeredOn: DateTime)
 ```
 
-But, now you want to create well-formed models to describe the response/requests of your HTTP REST APIs:
+But, now you want to create well-formed models to describe the requests/response of your HTTP REST APIs:
 ```scala
 // Response to GET /users/$id (Retrieve an existing user)
 case class UserGet(id: Int, name: String, email: String)
@@ -54,16 +54,29 @@ trait UserRepo {
 }
 ```
 
-Usage:
-In your `build.sbt`, add the following lines:
+SBT: In your `build.sbt`, add the following entries:
 
 ```scala
 resolvers += Resolver.bintrayRepo("pathikrit", "maven")
 
 libraryDependencies += "com.github.pathikrit" %% "metarest" % 0.1.0
+
+addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0-M5" cross CrossVersion.full)
 ```
 
+MetaRest also automatically generates Play's JSON formatters all the generated models using
+the [json-annotation](https://github.com/kifi/json-annotation) macro library itself:
 
-TODO:
-* Option to generate Play json formatters
-* Code coverage
+```scala
+import play.api.libs.json.Json
+
+val jsonStr = """{"id":0,"name":"Rick","email":"awesome@msn.com"}"""
+val request = Json.parse(jsonStr).as[User.Get]
+val json = Json.toJson(request)
+println(request)
+println(json)
+assert(json.toString == jsonStr)
+```
+
+The latest published version can be found here:
+http://dl.bintray.com/pathikrit/maven/com/github/pathikrit

@@ -14,6 +14,8 @@ scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature", "-language:_")
 
 libraryDependencies ++= Seq(
   "org.scala-lang" % "scala-reflect" % scalaVersion.value,
+  "com.kifi" %% "json-annotation" % "0.2",
+  "com.typesafe.play" %% "play-json" % "2.4.0-M2",
   "org.specs2" %% "specs2" % "2.4.1" % "test"
 )
 
