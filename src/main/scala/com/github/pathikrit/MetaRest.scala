@@ -4,6 +4,8 @@ import scala.annotation.StaticAnnotation
 import scala.language.experimental.macros
 import scala.reflect.macros._
 
+import CrossVersionDefs._
+
 class MetaRest extends StaticAnnotation {
   def macroTransform(annottees: Any*): Any = macro MetaRest.impl
 }
@@ -19,7 +21,7 @@ object MetaRest {
     def toMultiMap: Map[A, List[B]] = p.groupBy(_._1).mapValues(_.map(_._2))
   }
 
-  def impl(c: blackbox.Context)(annottees: c.Expr[Any]*): c.Expr[Any] = {
+  def impl(c: CrossVersionContext)(annottees: c.Expr[Any]*): c.Expr[Any] = {
     import c.universe._
 
     def generateModels(fields: List[ValDef]) = {
