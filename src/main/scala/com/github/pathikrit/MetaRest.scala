@@ -20,6 +20,8 @@ object MetaRest {
   def impl(c: macros.Context)(annottees: c.Expr[Any]*): c.Expr[Any] = {
     import c.universe._
 
+    def compileError(msg: String) = c.abort(c.enclosingPosition, s"@MetaRest: $msg")
+
     def toTypeName(name: String) = macros.toTypeName(c)(name)
 
     def extractClassNameAndFields(classDecl: ClassDef) = try {
@@ -81,7 +83,5 @@ object MetaRest {
       case (classDecl: ClassDef) :: (compDecl: ModuleDef) :: Nil => modifiedDeclaration(classDecl, Some(compDecl))
       case _ => compileError("must annotate a class")
     }
-
-    def compileError(msg: String) = c.abort(c.enclosingPosition, s"@MetaRest: $msg")
   }
 }
