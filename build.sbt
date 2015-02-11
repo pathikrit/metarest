@@ -32,7 +32,7 @@ libraryDependencies ++= Seq(
 )
 
 unmanagedSourceDirectories in Compile <+= (sourceDirectory in Compile, scalaBinaryVersion) {
-  (sourceDir, version) => sourceDir / (if (version.startsWith("2.10")) "scala_2.10" else "scala_2.11")
+  (sourceDir, version) => sourceDir / s"scala_$version"
 }
 
 addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0-M5" cross CrossVersion.full)

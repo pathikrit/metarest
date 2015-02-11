@@ -42,7 +42,7 @@ class MetaRestSpec extends FunSuite {
       @get override val id: Int,
       @MetaRest.get state: String,
       @get @post @patch subject: String,
-      @put @put private val body: A,
+      @put @put /*private val*/ body: A,
       @get @post @patch to: List[String],
       @get @post @patch cc: List[String] = Nil,
       @get @post @patch bcc: Option[List[String]] = None,
