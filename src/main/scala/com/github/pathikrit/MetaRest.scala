@@ -20,7 +20,9 @@ object MetaRest {
   def impl(c: macros.Context)(annottees: c.Expr[Any]*): c.Expr[Any] = {
     import c.universe._
 
-    def generateModels(fields: List[ValDef]) = {
+    def toTypeName(name: String) = macros.asTypeName(c)(name)
+
+    def generateModels(fields: List[ValDef]): Iterable[Tree] = {
       val annotatedFields = fields flatMap {field =>
         field.mods.annotations collect {
           case q"new $annotation" => annotation.toString -> field.duplicate
@@ -36,7 +38,7 @@ object MetaRest {
       }
 
       Map("Get" -> gets, "Post" -> posts, "Put" -> puts, "Patch" -> patches) collect {
-        case (name, reqFields) if reqFields.nonEmpty => q"@com.kifi.macros.json case class ${TypeName(name)}(..$reqFields)"
+        case (name, reqFields) if reqFields.nonEmpty => q"@com.kifi.macros.json case class ${toTypeName(name)}(..$reqFields)"
       } //TODO: Switch back to jsonstrict once this is fixed: https://github.com/kifi/json-annotation
     }
 

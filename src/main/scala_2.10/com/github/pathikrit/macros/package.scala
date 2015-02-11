@@ -1,8 +1,9 @@
 package com.github.pathikrit
 
 /**
- * In Scala 2.10, use legacy Context (doesn't know about blackbox/whitebox contexts introduced in Scala 2.11)
+ * Contains code related to macros that compiles without warning in Scala 2.10.x
  */
 package object macros {
-  type Context = scala.reflect.macros.Context
+  type Context = scala.reflect.macros.Context  //use legacy Context
+  def asTypeName(c: Context)(name: String) = c.universe.newTypeName(name)  // newTypeName has been deprecated
 }
