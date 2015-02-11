@@ -12,6 +12,9 @@ object MetaRest {
   class put extends MethodAnnotations
   class post extends MethodAnnotations
   class patch extends MethodAnnotations
+  object MethodAnnotations {
+    val values = List("get", "post", "put", "patch") //TODO: use some enum/sealed trait macro to do this automatically
+  }
 
   def impl(c: macros.Context)(annottees: c.Expr[Any]*): c.Expr[Any] = {
     import c.universe._
@@ -22,16 +25,14 @@ object MetaRest {
       case _: MatchError => c.abort(c.enclosingPosition, s"@MetaRest: $msg")
     }
 
-    def generateModels(originalFields: List[ValDef]) = {
-      val modelNames = List("get", "post", "put", "patch")
-
-      val newFields = originalFields.map(_.mods.annotations).zip(originalFields) flatMap { case (annotations, field) =>
-       annotations.map(_ -> field) collect {
+    def generateModels(fields: List[ValDef]) = {
+      val fieldsWithAnnotations = fields.map(_.mods.annotations).zip(fields)
+      val newFields = fieldsWithAnnotations flatMap { case (annotations, field) =>
+        annotations.map(_ -> field) collect {
           case (q"new patch", q"$accessor val $vname: $tpe") => "patch" -> q"$accessor val $vname: Option[$tpe] = None"
-          case (q"new $annotation", f) if modelNames contains annotation.toString => annotation.toString -> f.duplicate
+          case (q"new $annotation", f) if MethodAnnotations.values contains annotation.toString => annotation.toString -> f.duplicate
         }
       }
-
       newFields.groupBy(_._1) map { case (annotation, values) =>
         val (className, classFields) = (macros.toTypeName(c)(annotation.capitalize), values.map(_._2))
         q"@com.kifi.macros.json case class $className(..$classFields)" //TODO: Switch back to jsonstrict once this is fixed: https://github.com/kifi/json-annotation/issues/7
