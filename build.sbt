@@ -1,6 +1,6 @@
 name := "metarest"
 
-version := "0.2.1"
+version := "0.3.0"
 
 description := "Scala macros to generate RESTy models"
 

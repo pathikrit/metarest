@@ -77,7 +77,7 @@ SBT: In your `build.sbt`, add the following entries:
 resolvers += Resolver.bintrayRepo("pathikrit", "maven")
 
 libraryDependencies ++= Seq(
-  "com.github.pathikrit" %% "metarest" % "0.2.1",
+  "com.github.pathikrit" %% "metarest" % "0.3.0",
   "com.kifi" %% "json-annotation" % "0.1",
   "com.typesafe.play" %% "play-json" % "2.3.7"
 )
@@ -85,5 +85,7 @@ libraryDependencies ++= Seq(
 addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0-M5" cross CrossVersion.full)
 ```
 
-The latest published version can be found here:
+The latest published versions can be found here:
 http://dl.bintray.com/pathikrit/maven/com/github/pathikrit
+
+This library works with both Scala 2.10 and 2.11
