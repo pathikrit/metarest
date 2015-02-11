@@ -28,30 +28,31 @@ class MetaRestSpec extends FunSuite {
     "@MetaRest trait A" shouldNot compile
     "@MetaRest case class A()" should compile
     "@MetaRest object A" shouldNot compile
-    //"@MetaRest case class A[T]()" should compile
   }
 
-  //TODO: empty metarest, metarest.Get, other annotations, other annotations called Get?
-  /*test("Complex models") {
+  todo("Complex models") {
+    class GET extends scala.annotation.StaticAnnotation
 
     sealed trait Document {
       val id: Int
       type Data
     }
 
-    @MetaRest case class Email[A, B](
-      @get   override val id             : Int,
-      @get @post @patch   subject        : String,
-      @put @put           body           : A,
-      @get @post @patch   to             : List[String],
-      @get @post @patch   cc             : List[String] = Nil,
-      @get @post @patch   bcc            : Option[List[String]] = None,
-      @get @post      var attachments    : List[B] = Nil
+    /*@MetaRest*/ case class Email[A, B](
+      @get override val id: Int,
+      @MetaRest.get state: String,
+      @get @post @patch subject: String,
+      @put @put private val body: A,
+      @get @post @patch to: List[String],
+      @get @post @patch cc: List[String] = Nil,
+      @get @post @patch bcc: Option[List[String]] = None,
+      @get @post var attachments: List[B] = Nil,
+      @get @GET next: Option[Email[A, B]] = None
     ) extends Document {
       override type Data = A
     }
+  }
 
-    Email.Get(id = 0, subject = "test", to = "me") should beAnInstanceOf[Email.Get]
-  }*/
+  private[this] def todo(msg: String)(f: => Unit) = println(s"TODO: $msg")
 }
 
