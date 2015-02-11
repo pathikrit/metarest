@@ -31,23 +31,20 @@ object MetaRest {
       case _: MatchError => compileError("must annotate a case class")
     }
 
-    def generateModels(fields: List[ValDef]): Iterable[Tree] = {
-      val annotatedFields = fields flatMap {field =>
+    def generateModels(fields: List[ValDef]) = {
+      val modelNames = List("get", "post", "put", "patch")
+
+      val fieldList = fields flatMap {field =>
         field.mods.annotations collect {
-          case q"new $annotation" => annotation.toString -> field.duplicate
+          case q"new $annotation" => annotation.toString -> field
         }
+      } collect {
+        case ("patch", q"$accessor val $vname: $tpe") => "patch" -> q"$accessor val $vname: Option[$tpe] = None"
+        case (method, field) if modelNames contains method => method -> field.duplicate
       }
 
-      val fieldLookup = annotatedFields.toMultiMap withDefaultValue Nil
-
-      val (gets, posts, puts) = (fieldLookup("get"), fieldLookup("post"), fieldLookup("put"))
-
-      val patches = fieldLookup("patch") collect {
-        case q"$accessor val $vname: $tpe" => q"$accessor val $vname: Option[$tpe] = None"
-      }
-
-      Map("Get" -> gets, "Post" -> posts, "Put" -> puts, "Patch" -> patches) collect {
-        case (name, reqFields) if reqFields.nonEmpty => q"@com.kifi.macros.json case class ${toTypeName(name)}(..$reqFields)"
+      fieldList.toMultiMap.filter(_._2.nonEmpty).toList map {
+        case (name, reqFields) => q"@com.kifi.macros.json case class ${toTypeName(name.capitalize)}(..$reqFields)"
       } //TODO: Switch back to jsonstrict once this is fixed: https://github.com/kifi/json-annotation/issues/7
     }
 
