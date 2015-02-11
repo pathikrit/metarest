@@ -24,7 +24,7 @@ case class UserPatch(name: Option[String])
 
 That is a lot of boilerplate! Keeping all these request models in sync with your business model and/or adding/removing fields quickly becomes difficult and cumbersome for more complicated models.
 
-With MetaRest, all you need to do:
+With MetaRest, all you need to do is:
 ```scala
 import com.github.pathikrit.MetaRest._
 
@@ -73,7 +73,7 @@ println(json)
 assert(json.toString == jsonStr)
 ```
 
-SBT: In your `build.sbt`, add the following entries:
+Usage: In your `build.sbt`, add the following entries:
 
 ```scala
 resolvers += Resolver.bintrayRepo("pathikrit", "maven")
@@ -90,4 +90,4 @@ addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0-M5" cross CrossVersion
 The latest published versions can be found here:
 http://dl.bintray.com/pathikrit/maven/com/github/pathikrit
 
-This library works with both Scala 2.10 and 2.11
+This library has been tested with both Scala 2.10 and 2.11

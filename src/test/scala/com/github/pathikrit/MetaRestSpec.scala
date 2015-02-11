@@ -6,9 +6,9 @@ class MetaRestSpec extends FunSuite {
   import com.github.pathikrit.MetaRest._
   import play.api.libs.json.{Json, Reads, Writes}
 
-  def jsonRoundTrip[A: Reads : Writes](model: A) = Json.parse(Json.toJson(model).toString()).as[A] shouldEqual model
+  def testJsonRoundTrip[A: Reads : Writes](model: A) = Json.parse(Json.toJson(model).toString()).as[A] shouldEqual model
 
-  test("Generate Get, Post, Patch, Put models with JSON capabilities") {
+  test("Generation of Get, Post, Patch, Put models with JSON capabilities") {
     @MetaRest case class User(
       @get                id            : Int,
       @get @post @patch   name          : String,
@@ -16,11 +16,19 @@ class MetaRestSpec extends FunSuite {
                           registeredOn  : Long
     )
 
-    jsonRoundTrip(User.Get(id = 0, name = "Rick", email = "awesome@msn.com"))
-    jsonRoundTrip(User.Post(name = "Rick", email = "awesome@msn.com"))
+    testJsonRoundTrip(User.Get(id = 0, name = "Rick", email = "awesome@msn.com"))
+    testJsonRoundTrip(User.Post(name = "Rick", email = "awesome@msn.com"))
     "User.Put()" shouldNot compile
-    jsonRoundTrip(User.Patch(name = Some("Pathikrit")))
+    testJsonRoundTrip(User.Patch(name = Some("Pathikrit")))
     "User.Patch()" should compile
+  }
+
+  test("Non case classes") {
+    "@MetaRest class A" shouldNot compile
+    "@MetaRest trait A" shouldNot compile
+    "@MetaRest case class A()" should compile
+    "@MetaRest object A" shouldNot compile
+    //"@MetaRest case class A[T]()" should compile
   }
 
   //TODO: empty metarest, metarest.Get, other annotations, other annotations called Get?
@@ -43,7 +51,7 @@ class MetaRestSpec extends FunSuite {
       override type Data = A
     }
 
-    Email.Get(id = 0, subject = "test", to = "me") must beAnInstanceOf[Email.Get]
+    Email.Get(id = 0, subject = "test", to = "me") should beAnInstanceOf[Email.Get]
   }*/
 }
 
