@@ -20,15 +20,10 @@ object MetaRest {
   def impl(c: macros.Context)(annottees: c.Expr[Any]*): c.Expr[Any] = {
     import c.universe._
 
-    def compileError(msg: String) = c.abort(c.enclosingPosition, s"@MetaRest: $msg")
-
-    def toTypeName(name: String) = macros.toTypeName(c)(name)
-
-    def extractClassNameAndFields(classDecl: ClassDef) = try {
-      val q"case class $className(..$fields) extends ..$bases { ..$body }" = classDecl
-      (className, fields)
+    def withCompileError[A](msg: String)(block: => A): A = try {
+      block
     } catch {
-      case _: MatchError => compileError("must annotate a case class")
+      case _: MatchError => c.abort(c.enclosingPosition, s"@MetaRest: $msg")
     }
 
     def generateModels(originalFields: List[ValDef]) = {
@@ -44,12 +39,15 @@ object MetaRest {
       }
 
       newFields.toMultiMap.toList collect { case (name, reqFields) =>
-        q"@com.kifi.macros.json case class ${toTypeName(name.capitalize)}(..$reqFields)" //TODO: Switch back to jsonstrict once this is fixed: https://github.com/kifi/json-annotation/issues/7
+        q"@com.kifi.macros.json case class ${macros.toTypeName(c)(name.capitalize)}(..$reqFields)" //TODO: Switch back to jsonstrict once this is fixed: https://github.com/kifi/json-annotation/issues/7
       }
     }
 
     def modifiedDeclaration(classDecl: ClassDef, compDeclOpt: Option[ModuleDef] = None) = {
-      val (className, fields) = extractClassNameAndFields(classDecl)
+      val (className, fields) = withCompileError("must annotate a case class") {
+        val q"case class $className(..$fields) extends ..$bases { ..$body }" = classDecl
+        (className, fields)
+      }
 
       val requestModels = generateModels(fields)
 
@@ -75,10 +73,11 @@ object MetaRest {
       """)
     }
 
-    annottees.map(_.tree) match {
-      case (classDecl: ClassDef) :: Nil => modifiedDeclaration(classDecl)
-      case (classDecl: ClassDef) :: (compDecl: ModuleDef) :: Nil => modifiedDeclaration(classDecl, Some(compDecl))
-      case _ => compileError("must annotate a class")
+    withCompileError("must annotate a class") {
+      annottees.map(_.tree) match {
+        case (classDecl: ClassDef) :: Nil => modifiedDeclaration(classDecl)
+        case (classDecl: ClassDef) :: (compDecl: ModuleDef) :: Nil => modifiedDeclaration(classDecl, Some(compDecl))
+      }
     }
   }
 }
