@@ -25,17 +25,15 @@ object MetaRest {
     def generateModels(originalFields: List[ValDef]) = {
       val modelNames = List("get", "post", "put", "patch")
 
-      val newFields = originalFields flatMap {field =>
-        field.mods.annotations collect {
-          case q"new $annotation" => annotation.toString -> field
+      val newFields = originalFields.map(_.mods.annotations).zip(originalFields) flatMap { case (annotations, field) =>
+       annotations.map(_ -> field) collect {
+          case (q"new patch", q"$accessor val $vname: $tpe") => "patch" -> q"$accessor val $vname: Option[$tpe] = None"
+          case (q"new $annotation", f) if modelNames contains annotation.toString => annotation.toString -> f.duplicate
         }
-      } collect {
-        case (method @ "patch", q"$accessor val $vname: $tpe") => method -> q"$accessor val $vname: Option[$tpe] = None"
-        case (method, field) if modelNames contains method => method -> field.duplicate
       }
 
-      newFields.groupBy(_._1) map { case (key, value) =>
-        val (className, classFields) = (macros.toTypeName(c)(key.capitalize), value.map(_._2))
+      newFields.groupBy(_._1) map { case (annotation, values) =>
+        val (className, classFields) = (macros.toTypeName(c)(annotation.capitalize), values.map(_._2))
         q"@com.kifi.macros.json case class $className(..$classFields)" //TODO: Switch back to jsonstrict once this is fixed: https://github.com/kifi/json-annotation/issues/7
       }
     }
@@ -46,20 +44,18 @@ object MetaRest {
         (className, fields)
       }
 
-      val requestModels = generateModels(fields)
-
       val compDecl = compDeclOpt map { compDecl =>
         val q"object $obj extends ..$bases { ..$body }" = compDecl
         q"""
           object $obj extends ..$bases {
             ..$body
-            ..$requestModels
+            ..${generateModels(fields)}
           }
         """
       } getOrElse {
         q"""
           object ${className.toTermName} {
-            ..$requestModels
+            ..${generateModels(fields)}
           }
          """
       }
