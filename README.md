@@ -77,7 +77,7 @@ SBT: In your `build.sbt`, add the following entries:
 resolvers += Resolver.bintrayRepo("pathikrit", "maven")
 
 libraryDependencies ++= Seq(
-  "com.github.pathikrit" %% "metarest" % 0.2.1,
+  "com.github.pathikrit" %% "metarest" % "0.2.1",
   "com.kifi" %% "json-annotation" % "0.1",
   "com.typesafe.play" %% "play-json" % "2.3.7"
 )
