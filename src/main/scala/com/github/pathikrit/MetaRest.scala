@@ -31,21 +31,21 @@ object MetaRest {
       case _: MatchError => compileError("must annotate a case class")
     }
 
-    def generateModels(fields: List[ValDef]) = {
+    def generateModels(originalFields: List[ValDef]) = {
       val modelNames = List("get", "post", "put", "patch")
 
-      val fieldList = fields flatMap {field =>
+      val newFields = originalFields flatMap {field =>
         field.mods.annotations collect {
           case q"new $annotation" => annotation.toString -> field
         }
       } collect {
-        case ("patch", q"$accessor val $vname: $tpe") => "patch" -> q"$accessor val $vname: Option[$tpe] = None"
+        case (method @ "patch", q"$accessor val $vname: $tpe") => method -> q"$accessor val $vname: Option[$tpe] = None"
         case (method, field) if modelNames contains method => method -> field.duplicate
       }
 
-      fieldList.toMultiMap.filter(_._2.nonEmpty).toList map {
-        case (name, reqFields) => q"@com.kifi.macros.json case class ${toTypeName(name.capitalize)}(..$reqFields)"
-      } //TODO: Switch back to jsonstrict once this is fixed: https://github.com/kifi/json-annotation/issues/7
+      newFields.toMultiMap.toList collect { case (name, reqFields) =>
+        q"@com.kifi.macros.json case class ${toTypeName(name.capitalize)}(..$reqFields)" //TODO: Switch back to jsonstrict once this is fixed: https://github.com/kifi/json-annotation/issues/7
+      }
     }
 
     def modifiedDeclaration(classDecl: ClassDef, compDeclOpt: Option[ModuleDef] = None) = {
