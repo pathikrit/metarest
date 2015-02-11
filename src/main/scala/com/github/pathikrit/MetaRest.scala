@@ -13,10 +13,6 @@ object MetaRest {
   class post extends MethodAnnotations
   class patch extends MethodAnnotations
 
-  private[this] implicit class Pairs[A, B](p: List[(A, B)]) {
-    def toMultiMap: Map[A, List[B]] = p.groupBy(_._1).mapValues(_.map(_._2))
-  }
-
   def impl(c: macros.Context)(annottees: c.Expr[Any]*): c.Expr[Any] = {
     import c.universe._
 
@@ -38,8 +34,9 @@ object MetaRest {
         case (method, field) if modelNames contains method => method -> field.duplicate
       }
 
-      newFields.toMultiMap.toList collect { case (name, reqFields) =>
-        q"@com.kifi.macros.json case class ${macros.toTypeName(c)(name.capitalize)}(..$reqFields)" //TODO: Switch back to jsonstrict once this is fixed: https://github.com/kifi/json-annotation/issues/7
+      newFields.groupBy(_._1) map { case (key, value) =>
+        val (className, classFields) = (macros.toTypeName(c)(key.capitalize), value.map(_._2))
+        q"@com.kifi.macros.json case class $className(..$classFields)" //TODO: Switch back to jsonstrict once this is fixed: https://github.com/kifi/json-annotation/issues/7
       }
     }
 
