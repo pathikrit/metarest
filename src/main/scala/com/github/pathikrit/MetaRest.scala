@@ -20,7 +20,14 @@ object MetaRest {
   def impl(c: macros.Context)(annottees: c.Expr[Any]*): c.Expr[Any] = {
     import c.universe._
 
-    def toTypeName(name: String) = macros.asTypeName(c)(name)
+    def toTypeName(name: String) = macros.toTypeName(c)(name)
+
+    def extractClassNameAndFields(classDecl: ClassDef) = try {
+      val q"case class $className(..$fields) extends ..$bases { ..$body }" = classDecl
+      (className, fields)
+    } catch {
+      case _: MatchError => compileError("must annotate a case class")
+    }
 
     def generateModels(fields: List[ValDef]): Iterable[Tree] = {
       val annotatedFields = fields flatMap {field =>
@@ -39,11 +46,11 @@ object MetaRest {
 
       Map("Get" -> gets, "Post" -> posts, "Put" -> puts, "Patch" -> patches) collect {
         case (name, reqFields) if reqFields.nonEmpty => q"@com.kifi.macros.json case class ${toTypeName(name)}(..$reqFields)"
-      } //TODO: Switch back to jsonstrict once this is fixed: https://github.com/kifi/json-annotation
+      } //TODO: Switch back to jsonstrict once this is fixed: https://github.com/kifi/json-annotation/issues/7
     }
 
     def modifiedDeclaration(classDecl: ClassDef, compDeclOpt: Option[ModuleDef] = None) = {
-      val q"case class $className(..$fields) extends ..$bases { ..$body }" = classDecl
+      val (className, fields) = extractClassNameAndFields(classDecl)
 
       val requestModels = generateModels(fields)
 
@@ -72,7 +79,9 @@ object MetaRest {
     annottees.map(_.tree) match {
       case (classDecl: ClassDef) :: Nil => modifiedDeclaration(classDecl)
       case (classDecl: ClassDef) :: (compDecl: ModuleDef) :: Nil => modifiedDeclaration(classDecl, Some(compDecl))
-      case _ => c.abort(c.enclosingPosition, "@MetaRest must annotate a class")
+      case _ => compileError("must annotate a class")
     }
+
+    def compileError(msg: String) = c.abort(c.enclosingPosition, s"@MetaRest: $msg")
   }
 }
