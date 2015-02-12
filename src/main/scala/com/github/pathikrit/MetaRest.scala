@@ -7,14 +7,10 @@ class MetaRest extends StaticAnnotation {
 }
 
 object MetaRest {
-  sealed trait MethodAnnotations extends StaticAnnotation
-  class get extends MethodAnnotations
-  class put extends MethodAnnotations
-  class post extends MethodAnnotations
-  class patch extends MethodAnnotations
-  object MethodAnnotations {
-    val values = List("get", "post", "put", "patch") //TODO: use some enum/sealed trait macro to do this automatically
-  }
+  class   get extends StaticAnnotation
+  class   put extends StaticAnnotation
+  class  post extends StaticAnnotation
+  class patch extends StaticAnnotation
 
   def impl(c: macros.Context)(annottees: c.Expr[Any]*): c.Expr[Any] = {
     import c.universe._
@@ -33,7 +29,7 @@ object MetaRest {
       val newFields = fieldsWithAnnotations flatMap { case (annotations, field) =>
         annotations.map(_ -> field) collect {
           case (q"new patch", q"$accessor val $vname: $tpe") => "patch" -> q"$accessor val $vname: Option[$tpe] = None"
-          case (q"new $annotation", f) if MethodAnnotations.values contains annotation.toString => annotation.toString -> f.duplicate
+          case (q"new $annotation", f) if Set("get", "post", "put") contains annotation.toString => annotation.toString -> f.duplicate
         }
       }
       newFields.groupBy(_._1) map { case (annotation, values) =>
