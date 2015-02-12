@@ -24,7 +24,7 @@ That is a lot of boilerplate! Keeping all these request models in sync with your
 
 With MetaRest, all you need to do is:
 ```scala
-import com.github.pathikrit.MetaRest._
+import com.github.pathikrit.MetaRest, MetaRest._
 
 @MetaRest case class User(
   @get               id            : Int,

@@ -1,9 +1,9 @@
-package com.github.pathikrit
+package com.github.pathikrit.suites
 
 import org.scalatest._, Matchers._
 
-class MetaRestSpec extends FunSuite {
-  import com.github.pathikrit.MetaRest._
+class MetaRestSuite extends FunSuite {
+  import com.github.pathikrit.MetaRest, MetaRest._
   import play.api.libs.json.{Json, Reads, Writes}
 
   def testJsonRoundTrip[A: Reads : Writes](model: A) = Json.parse(Json.toJson(model).toString()).as[A] shouldEqual model
@@ -39,7 +39,7 @@ class MetaRestSpec extends FunSuite {
     }
 
     /*@MetaRest*/ case class Email[A, B](
-      @get override val id: Int,
+      @get @get override val id: Int,
       @MetaRest.get state: String,
       @get @post @patch subject: String,
       @put @put /*private val*/ body: A,
