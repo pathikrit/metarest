@@ -61,16 +61,13 @@ the [json-annotation](https://github.com/kifi/json-annotation) macro:
 import play.api.libs.json.Json
 
 val jsonStr = """{
-  "id": 0,
   "name": "Rick",
   "email": "awesome@msn.com"
 }"""
-val request: User.Get = Json.parse(jsonStr).as[User.Get]
+val request: User.Post = Json.parse(jsonStr).as[User.Post]
 val json: JsValue = Json.toJson(request)
 
-println(request)
-println(json)
-
+println(s"REQUEST=$request", s"JSON=$json")
 assert(json.toString == jsonStr)
 ```
 
@@ -80,9 +77,9 @@ Usage: In your `build.sbt`, add the following entries:
 resolvers += Resolver.bintrayRepo("pathikrit", "maven")
 
 libraryDependencies ++= Seq(
-  "com.github.pathikrit" %% "metarest" % "0.3.0",
+  "com.github.pathikrit" %% "metarest" % "0.3.1",
   "com.kifi" %% "json-annotation" % "0.1",
-  "com.typesafe.play" %% "play-json" % "2.3.8"   // No need to add play-json if you are already using Play 2.1+
+  "com.typesafe.play" %% "play-json" % "2.3.8" // No need to add play-json if you are already using Play 2.1+
 )
 
 addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0-M5" cross CrossVersion.full)
