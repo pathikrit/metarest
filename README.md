@@ -70,6 +70,7 @@ val json: JsValue = Json.toJson(request)
 
 println(request)
 println(json)
+
 assert(json.toString == jsonStr)
 ```
 
@@ -81,7 +82,7 @@ resolvers += Resolver.bintrayRepo("pathikrit", "maven")
 libraryDependencies ++= Seq(
   "com.github.pathikrit" %% "metarest" % "0.3.0",
   "com.kifi" %% "json-annotation" % "0.1",
-  "com.typesafe.play" %% "play-json" % "2.3.7"
+  "com.typesafe.play" %% "play-json" % "2.3.8"   // No need to add play-json if you are already using Play 2.1+
 )
 
 addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0-M5" cross CrossVersion.full)
