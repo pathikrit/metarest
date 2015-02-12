@@ -19,10 +19,13 @@ object MetaRest {
   def impl(c: macros.Context)(annottees: c.Expr[Any]*): c.Expr[Any] = {
     import c.universe._
 
-    def withCompileError[A](msg: String)(block: => A): A = try {
-      block
-    } catch {
+    def withCompileError[A](msg: String)(block: => A): A = try block catch {
       case _: MatchError => c.abort(c.enclosingPosition, s"@MetaRest: $msg")
+    }
+
+    def getClassAndFields(classDecl: ClassDef) = withCompileError("must annotate a case class") {
+      val q"case class $className(..$fields) extends ..$bases { ..$body }" = classDecl
+      (className, fields)
     }
 
     def generateModels(fields: List[ValDef]) = {
@@ -40,10 +43,7 @@ object MetaRest {
     }
 
     def modifiedDeclaration(classDecl: ClassDef, compDeclOpt: Option[ModuleDef] = None) = {
-      val (className, fields) = withCompileError("must annotate a case class") {
-        val q"case class $className(..$fields) extends ..$bases { ..$body }" = classDecl
-        (className, fields)
-      }
+      val (className, fields) = getClassAndFields(classDecl)
 
       val compDecl = compDeclOpt map { compDecl =>
         val q"object $obj extends ..$bases { ..$body }" = compDecl
