@@ -1,6 +1,4 @@
-[![Build Status](https://travis-ci.org/pathikrit/metarest.png?branch=master)](http://travis-ci.org/pathikrit/metarest)
-
-MetaRest
+MetaRest [![Build Status](https://travis-ci.org/pathikrit/metarest.png?branch=master)](http://travis-ci.org/pathikrit/metarest)
 --------
 Use Scala macros to generate your RESTy models
 
@@ -54,13 +52,13 @@ trait UserRepo {
 }
 ```
 
-MetaRest also automatically generates Play's JSON formatters for all the models using
+MetaRest also automatically generates Play's Json formatters for all the models using
 the [json-annotation](https://github.com/kifi/json-annotation) macro:
 
 ```scala
 import play.api.libs.json.Json
 
-val jsonStr = """{
+val jsonStr: String = """{
   "name": "Rick",
   "email": "awesome@msn.com"
 }"""
