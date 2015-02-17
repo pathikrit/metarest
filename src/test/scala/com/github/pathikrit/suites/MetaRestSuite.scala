@@ -4,24 +4,6 @@ import org.scalatest._, Matchers._
 
 class MetaRestSuite extends FunSuite {
   import com.github.pathikrit.MetaRest, MetaRest._
-  import play.api.libs.json.{Json, Reads, Writes}
-
-  def testJsonRoundTrip[A: Reads : Writes](model: A) = Json.parse(Json.toJson(model).toString()).as[A] shouldEqual model
-
-  test("Generation of Get, Post, Patch, Put models with JSON capabilities") {
-    @MetaRest case class User(
-      @get                id            : Int,
-      @get @post @patch   name          : String,
-      @get @post          email         : String,
-                          registeredOn  : Long
-    )
-
-    testJsonRoundTrip(User.Get(id = 0, name = "Rick", email = "awesome@msn.com"))
-    testJsonRoundTrip(User.Post(name = "Rick", email = "awesome@msn.com"))
-    "User.Put()" shouldNot compile
-    testJsonRoundTrip(User.Patch(name = Some("Pathikrit")))
-    "User.Patch()" should compile
-  }
 
   test("Non case classes") {
     "@MetaRest class A" shouldNot compile

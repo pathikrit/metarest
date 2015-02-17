@@ -23,8 +23,6 @@ libraryDependencies ++= (
 )
 
 libraryDependencies ++= Seq(
-  "com.kifi" %% "json-annotation" % "0.1" % Test,
-  "com.typesafe.play" %% "play-json" % "2.3.8" % Test,
   "org.scalatest" %% "scalatest" % "2.2.4" % Test
 )
 

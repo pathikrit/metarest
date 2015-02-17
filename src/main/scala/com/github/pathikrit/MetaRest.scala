@@ -32,10 +32,6 @@ object MetaRest {
           case (q"new $annotation", f) if Set("get", "post", "put") contains annotation.toString => annotation.toString -> f.duplicate
         }
       }
-      newFields.groupBy(_._1) map { case (annotation, values) =>
-        val (className, classFields) = (macros.toTypeName(c)(annotation.capitalize), values.map(_._2))
-        q"@com.kifi.macros.json case class $className(..$classFields)" //TODO: Switch back to jsonstrict once this is fixed: https://github.com/kifi/json-annotation/issues/7
-      }
     }
 
     def modifiedDeclaration(classDecl: ClassDef, compDeclOpt: Option[ModuleDef] = None) = {
