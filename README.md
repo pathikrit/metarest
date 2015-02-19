@@ -24,9 +24,9 @@ That is a lot of boilerplate! Keeping all these request models in sync with your
 
 With MetaRest, all you need to do is:
 ```scala
-import com.github.pathikrit.MetaRest, MetaRest._
+import com.github.pathikrit.metarest.annotations._
 
-@MetaRest case class User(
+@Resource case class User(
   @get               id            : Int,
   @get @post @patch  name          : String,
   @get @post         email         : String,

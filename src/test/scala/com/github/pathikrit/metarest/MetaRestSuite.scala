@@ -1,15 +1,15 @@
-package com.github.pathikrit.suites
+package com.github.pathikrit.metarest
 
 import org.scalatest._, Matchers._
 
 class MetaRestSuite extends FunSuite {
-  import com.github.pathikrit.MetaRest, MetaRest._
+  import com.github.pathikrit.metarest.annotations._
   import play.api.libs.json.{Json, Reads, Writes}
 
   def testJsonRoundTrip[A: Reads : Writes](model: A) = Json.parse(Json.toJson(model).toString()).as[A] shouldEqual model
 
   test("Generation of Get, Post, Patch, Put models with JSON capabilities") {
-    @MetaRest case class User(
+    @Resource case class User(
       @get                id            : Int,
       @get @post @patch   name          : String,
       @get @post          email         : String,
@@ -24,10 +24,10 @@ class MetaRestSuite extends FunSuite {
   }
 
   test("Non case classes") {
-    "@MetaRest class A" shouldNot compile
-    "@MetaRest trait A" shouldNot compile
-    "@MetaRest case class A()" should compile
-    "@MetaRest object A" shouldNot compile
+    "@Resource class A" shouldNot compile
+    "@Resource trait A" shouldNot compile
+    "@Resource case class A()" should compile
+    "@Resource object A" shouldNot compile
   }
 
   todo("Complex models") {
@@ -38,9 +38,9 @@ class MetaRestSuite extends FunSuite {
       type Data
     }
 
-    /*@MetaRest*/ case class Email[A, B](
+    /*@Resource*/ case class Email[A, B](
       @get @get override val id: Int,
-      @MetaRest.get state: String,
+      @get state: String,
       @get @post @patch subject: String,
       @put @put /*private val*/ body: A,
       @get @post @patch to: List[String],
