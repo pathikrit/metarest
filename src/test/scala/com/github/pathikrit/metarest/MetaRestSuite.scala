@@ -3,12 +3,30 @@ package com.github.pathikrit.metarest
 import org.scalatest._, Matchers._
 
 class MetaRestSuite extends FunSuite {
-  import com.github.pathikrit.metarest.annotations._
-  import play.api.libs.json.{Json, Reads, Writes}
+  test("Generation of Get, Post, Patch, Put models") {
+    import com.github.pathikrit.metarest.annotations.{Resource, get, put, post, patch}
 
-  def testJsonRoundTrip[A: Reads : Writes](model: A) = Json.parse(Json.toJson(model).toString()).as[A] shouldEqual model
+    @Resource case class User(
+      @get                id            : Int,
+      @get @post @patch   name          : String,
+      @get @post          email         : String,
+                          registeredOn  : Long
+    )
 
-  test("Generation of Get, Post, Patch, Put models with JSON capabilities") {
+    """User.Get(id = 0, name = "Rick", email = "awesome@msn.com")""" should compile
+    """User.Post(name = "Rick", email = "awesome@msn.com")""" should compile
+    """User.Put()""" shouldNot compile
+    """User.Patch(name = Some("Pathikrit"))""" should compile
+    """User.Patch()""" should compile
+    //TODO: No json formatters here
+  }
+
+  test("Play Json") {
+    import com.github.pathikrit.metarest.annotations.{ResourceWithPlayJson => Resource, get, put, post, patch}
+
+    import play.api.libs.json.{Json, Reads, Writes}
+    def testJsonRoundTrip[A: Reads : Writes](model: A) = Json.parse(Json.toJson(model).toString()).as[A] shouldEqual model
+
     @Resource case class User(
       @get                id            : Int,
       @get @post @patch   name          : String,
@@ -24,6 +42,8 @@ class MetaRestSuite extends FunSuite {
   }
 
   test("Non case classes") {
+    import com.github.pathikrit.metarest.annotations.{ResourceWithPlayJson => Resource, get, put, post, patch}
+
     "@Resource class A" shouldNot compile
     "@Resource trait A" shouldNot compile
     "@Resource case class A()" should compile
@@ -31,6 +51,8 @@ class MetaRestSuite extends FunSuite {
   }
 
   todo("Complex models") {
+    import com.github.pathikrit.metarest.annotations.{ResourceWithPlayJson => Resource, get, put, post, patch}
+
     class GET extends scala.annotation.StaticAnnotation
 
     sealed trait Document {

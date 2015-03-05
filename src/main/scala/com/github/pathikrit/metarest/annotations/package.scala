@@ -5,7 +5,15 @@ import scala.annotation.StaticAnnotation
 
 package object annotations {
   class Resource extends StaticAnnotation {
-    def macroTransform(annottees: Any*): Any = macro Macro.withJson.impl
+    def macroTransform(annottees: Any*): Any = macro Macro.noJson.impl
+  }
+
+  class ResourceWithPlayJson extends StaticAnnotation {
+    def macroTransform(annottees: Any*): Any = macro Macro.playJson.impl
+  }
+
+  class ResourceWithSprayJson extends StaticAnnotation {
+    def macroTransform(annottees: Any*): Any = macro Macro.sprayJson.impl
   }
 
   class get extends StaticAnnotation
@@ -13,12 +21,16 @@ package object annotations {
   class post extends StaticAnnotation
   class patch extends StaticAnnotation
 
-  class Macro(generateJson: Boolean) {
+  object JsonMode extends Enumeration {
+    val play, spray = Value
+  }
+
+  class Macro(jsonMode: Option[JsonMode.Value]) {
     def impl(c: macros.Context)(annottees: c.Expr[Any]*): c.Expr[Any] = {
       import c.universe._
 
       def withCompileError[A](msg: String)(block: => A): A = try block catch {
-        case _: MatchError => c.abort(c.enclosingPosition, s"@MetaRest: $msg")
+        case e: MatchError => c.abort(c.enclosingPosition, s"MetaRest: $msg; Got: $e")
       }
 
       def getClassAndFields(classDecl: ClassDef) = withCompileError("must annotate a case class") {
@@ -75,7 +87,8 @@ package object annotations {
   }
 
   object Macro {
-    object withJson extends Macro(generateJson = true)
-    object noJson extends Macro(generateJson = false)
+    object noJson extends Macro(None)
+    object playJson extends Macro(Some(JsonMode.play))
+    object sprayJson extends Macro(Some(JsonMode.spray))
   }
 }

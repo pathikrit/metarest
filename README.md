@@ -1,4 +1,4 @@
-MetaRest [![Build Status](https://travis-ci.org/pathikrit/metarest.png?branch=master)](http://travis-ci.org/pathikrit/metarest)
+MetaRest [![Build Status](https://travis-ci.org/pathikrit/metarest.png?branch=master)](http://travis-ci.org/pathikrit/metarest) [![Download](https://api.bintray.com/packages/pathikrit/maven/metarest/images/download.svg)](https://bintray.com/pathikrit/maven/metarest/_latestVersion)
 --------
 Use Scala macros to generate your RESTy models
 
@@ -52,10 +52,20 @@ trait UserRepo {
 }
 ```
 
-MetaRest also automatically generates Play's Json formatters for all the models using
-the [json-annotation](https://github.com/kifi/json-annotation) macro:
+MetaRest can also automatically generate various automatic JSON formatters:
+
+To use Play's Json formatters use the `@ResourceWithPlayJson` annotation:
 
 ```scala
+import com.github.pathikrit.metarest.annotations.{ResourceWithPlayJson => Resource, get, put, post, patch}
+
+@Resource case class User(
+  @get               id            : Int,
+  @get @post @patch  name          : String,
+  @get @post         email         : String,
+                     registeredOn  : DateTime
+)
+
 import play.api.libs.json.Json
 
 val jsonStr: String = """{
@@ -70,20 +80,20 @@ assert(json.toString == jsonStr)
 ```
 
 Usage: In your `build.sbt`, add the following entries:
-
 ```scala
 resolvers += Resolver.bintrayRepo("pathikrit", "maven")
 
-libraryDependencies ++= Seq(
-  "com.github.pathikrit" %% "metarest" % "0.3.1",
-  "com.kifi" %% "json-annotation" % "0.1",
-  "com.typesafe.play" %% "play-json" % "2.3.8" // No need to add play-json if you are already using Play 2.1+
-)
+libraryDependencies += "com.github.pathikrit" %% "metarest" % "0.3.1"
 
 addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0-M5" cross CrossVersion.full)
 ```
 
-The latest published versions can be found here:
-http://dl.bintray.com/pathikrit/maven/com/github/pathikrit
+If you are using the `@ResourceWithPlayJson` annotation, you may need to add the following libraries:
+```scala
+libraryDependencies ++= Seq(
+  "com.kifi" %% "json-annotation" % "0.1",
+  "com.typesafe.play" %% "play-json" % "2.3.8" // No need to add play-json if you are already using Play 2.1+
+)
+```
 
 This library has been tested with both Scala 2.10 and 2.11
