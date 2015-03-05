@@ -52,13 +52,14 @@ trait UserRepo {
 }
 ```
 
+**JSON support**:
 MetaRest can also automatically generate various automatic JSON formatters:
 
 To use Play's Json formatters use the `@ResourceWithPlayJson` annotation:
 
 ```scala
-import com.github.pathikrit.metarest.annotations.{ResourceWithPlayJson => Resource, get, put, post, patch}
-
+import com.github.pathikrit.metarest.annotations.{ResourceWithPlayJson => Resource,
+                                                  get, put, post, patch}
 @Resource case class User(
   @get               id            : Int,
   @get @post @patch  name          : String,
@@ -83,7 +84,7 @@ Usage: In your `build.sbt`, add the following entries:
 ```scala
 resolvers += Resolver.bintrayRepo("pathikrit", "maven")
 
-libraryDependencies += "com.github.pathikrit" %% "metarest" % "0.3.1"
+libraryDependencies += "com.github.pathikrit" %% "metarest" % "1.0.0"
 
 addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0-M5" cross CrossVersion.full)
 ```
