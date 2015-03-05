@@ -18,7 +18,9 @@ class MetaRestSuite extends FunSuite {
     """User.Put()""" shouldNot compile
     """User.Patch(name = Some("Pathikrit"))""" should compile
     """User.Patch()""" should compile
-    //TODO: No json formatters here
+
+    """play.api.libs.json.Json.toJson(User.Post(name = "Rick", email = "awesome@msn.com"))""" shouldNot compile
+    //TODO: No spray json json formatters here
   }
 
   test("Play Json") {

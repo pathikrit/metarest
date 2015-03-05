@@ -48,7 +48,12 @@ package object annotations {
         }
         newFields.groupBy(_._1) map { case (annotation, values) =>
           val (className, classFields) = (macros.toTypeName(c)(annotation.capitalize), values.map(_._2))
-          q"@com.kifi.macros.json case class $className(..$classFields)" //TODO: Switch back to jsonstrict once this is fixed: https://github.com/kifi/json-annotation/issues/7
+          withCompileError("Unhandled Json mode") {
+            jsonMode match {
+              case Some(JsonMode.play) => q"@com.kifi.macros.json case class $className(..$classFields)"    //TODO: Switch back to jsonstrict once this is fixed: https://github.com/kifi/json-annotation/issues/7
+              case _ => q"case class $className(..$classFields)"
+            }
+          }
         }
       }
 

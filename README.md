@@ -3,7 +3,6 @@ MetaRest [![Build Status](https://travis-ci.org/pathikrit/metarest.png?branch=ma
 Use Scala macros to generate your RESTy models
 
 Let's say you have the following `User` model in your business layer:
-
 ```scala
 case class User(id: Int, name: String, email: String, registeredOn: DateTime)
 ```
@@ -21,7 +20,6 @@ case class UserPatch(name: Option[String])
 ```
 
 That is a lot of boilerplate! Keeping all these request models in sync with your business model and/or adding/removing fields quickly becomes difficult and cumbersome for more complicated models.
-
 With MetaRest, all you need to do is:
 ```scala
 import com.github.pathikrit.metarest.annotations._
@@ -52,11 +50,11 @@ trait UserRepo {
 }
 ```
 
-**JSON support**:
-MetaRest can also automatically generate various automatic JSON formatters:
+**JSON support**
 
-To use Play's Json formatters use the `@ResourceWithPlayJson` annotation:
+MetaRest can automatically generate automatic JSON formatters:
 
+To use [Play's Json](https://www.playframework.com/documentation/2.4.x/ScalaJson) formatters use the `@ResourceWithPlayJson` annotation:
 ```scala
 import com.github.pathikrit.metarest.annotations.{ResourceWithPlayJson => Resource,
                                                   get, put, post, patch}
@@ -73,6 +71,7 @@ val jsonStr: String = """{
   "name": "Rick",
   "email": "awesome@msn.com"
 }"""
+
 val request: User.Post = Json.parse(jsonStr).as[User.Post]
 val json: JsValue = Json.toJson(request)
 
@@ -80,7 +79,9 @@ println(s"REQUEST=$request", s"JSON=$json")
 assert(json.toString == jsonStr)
 ```
 
-Usage: In your `build.sbt`, add the following entries:
+**sbt**
+
+In your `build.sbt`, add the following entries:
 ```scala
 resolvers += Resolver.bintrayRepo("pathikrit", "maven")
 
