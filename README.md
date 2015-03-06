@@ -79,7 +79,7 @@ println(s"REQUEST=$request", s"JSON=$json")
 assert(json.toString == jsonStr)
 ```
 
-You can similarly use [Spray's JSON](https://github.com/spray/spray-json) formatters by using the `ResourceWithSprayJson` annotation:
+You can similarly use [Spray's JSON](https://github.com/spray/spray-json) formatters by using the `@ResourceWithSprayJson` annotation instead:
 ```scala
 import com.github.pathikrit.metarest.annotations.{ResourceWithSprayJson => Resource}
 ```
@@ -118,4 +118,4 @@ libraryDependencies ++= Seq(
 )
 ```
 
-Although this library works only with Play 2.11+, you can still find [older versions](https://github.com/pathikrit/metarest/tree/a883c674c67a31f9eddf70797328e864f185a714) of this library that used to support Play 2.10.x [here](http://dl.bintray.com/pathikrit/maven/com/github/pathikrit)
+Although this library works only with Scala 2.11+, you can still find [older versions](https://github.com/pathikrit/metarest/tree/a883c674c67a31f9eddf70797328e864f185a714) of this library that used to support Scala 2.10.x [here](http://dl.bintray.com/pathikrit/maven/com/github/pathikrit).

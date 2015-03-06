@@ -29,6 +29,14 @@ package object annotations {
     def impl(c: blackbox.Context)(annottees: c.Expr[Any]*): c.Expr[Any] = {
       import c.universe._
 
+      def annotate(className: TypeName, classFields: List[ValDef]) = withCompileError("unhandled json mode") {
+        jsonMode match {      // TODO: DRY - should just pass in q"case class $className(..$classFields)"
+          case None => q"case class $className(..$classFields)"
+          case Some(JsonMode.spray) => q"@us.bleibinha.spray.json.macros.jsonstrict case class $className(..$classFields)"
+          case Some(JsonMode.play) => q"@com.kifi.macros.jsonstrict case class $className(..$classFields)"
+        }
+      }
+
       def withCompileError[A](msg: String)(block: => A): A = try block catch {
         case e: MatchError => c.abort(c.enclosingPosition, s"MetaRest: $msg; Got: $e")
       }
@@ -48,13 +56,7 @@ package object annotations {
         }
         newFields.groupBy(_._1) map { case (annotation, values) =>
           val (className, classFields) = (TypeName(annotation.capitalize), values.map(_._2))
-          withCompileError("unhandled json mode") {
-            jsonMode match {      // TODO: DRY
-              case None => q"case class $className(..$classFields)"
-              case Some(JsonMode.spray) => q"@us.bleibinha.spray.json.macros.jsonstrict case class $className(..$classFields)"
-              case Some(JsonMode.play) => q"@com.kifi.macros.jsonstrict case class $className(..$classFields)"
-            }
-          }
+          annotate(className, classFields)
         }
       }
 
