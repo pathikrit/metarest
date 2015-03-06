@@ -14,7 +14,11 @@ crossScalaVersions := Seq("2.10.2", "2.10.3", "2.10.4", "2.11.0", "2.11.1", "2.1
 
 scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature", "-language:experimental.macros")
 
-resolvers += Resolver.typesafeRepo("releases")
+resolvers ++= Seq(
+  Resolver.typesafeRepo("releases"),
+  "bleibinha.us/archiva releases" at "http://bleibinha.us/archiva/repository/releases",
+  "spray repo" at "repo.spray.io"
+)
 
 libraryDependencies <+= scalaVersion("org.scala-lang" % "scala-reflect" % _)
 
@@ -23,9 +27,11 @@ libraryDependencies ++= (
 )
 
 libraryDependencies ++= Seq(
+  "org.scalatest" %% "scalatest" % "2.2.4" % Test,
   "com.kifi" %% "json-annotation" % "0.1" % Test,
   "com.typesafe.play" %% "play-json" % "2.3.8" % Test,
-  "org.scalatest" %% "scalatest" % "2.2.4" % Test
+  "us.bleibinha" %% "spray-json-annotation" % "0.4" % Test,
+  "io.spray" %% "spray-json" % "1.3.1" % Test
 )
 
 unmanagedSourceDirectories in Compile <+= (sourceDirectory in Compile, scalaBinaryVersion) {
