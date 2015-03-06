@@ -19,7 +19,7 @@ case class UserPost(name: String, email: String)
 case class UserPatch(name: Option[String])
 ```
 
-That is a lot of boilerplate! Keeping all these request models in sync with your business model and/or adding/removing fields quickly becomes difficult and cumbersome for more complicated models.
+That is a lot of boilerplate! Keeping all these request models in sync with your business model and/or adding/removing fields quickly becomes tedious for more complicated models.
 With MetaRest, all you need to do is:
 ```scala
 import com.github.pathikrit.metarest.annotations._
@@ -41,7 +41,7 @@ object User {
 }
 ```
 
-Now, you can have a well defined CRUD interface:
+Now, you can have a well defined CRUD interface for your API:
 ```scala
 trait UserRepo {
   def get(id: Int): User.Get
@@ -50,7 +50,7 @@ trait UserRepo {
 }
 ```
 
-**JSON support**
+**JSON Support**
 
 MetaRest can automatically generate various JSON formatters:
 
@@ -81,8 +81,8 @@ assert(json.toString == jsonStr)
 
 You can similarly use [Spray's JSON](https://github.com/spray/spray-json) formatters by using the `@ResourceWithSprayJson` annotation instead:
 ```scala
-import com.github.pathikrit.metarest.annotations.{ResourceWithSprayJson => Resource}
-
+import com.github.pathikrit.metarest.annotations.{ResourceWithSprayJson => Resource,
+                                                  get, put, post, patch}
 @Resource case class User(
   @get               id            : Int,
   @get @post @patch  name          : String,
@@ -118,7 +118,7 @@ addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0-M5" cross CrossVersion
 If you are using the `@ResourceWithPlayJson` annotation, you may need to add the following:
 ```scala
 libraryDependencies ++= Seq(
-  "com.kifi" %% "json-annotation" % "0.1",
+  "com.kifi" %% "json-annotation" % "0.2",
   "com.typesafe.play" %% "play-json" % "2.3.8" // No need to add this if you are already using Play 2.1+
 )
 ```
