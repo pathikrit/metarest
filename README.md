@@ -54,7 +54,7 @@ trait UserRepo {
 
 MetaRest can automatically generate automatic JSON formatters:
 
-To use [Play's Json](https://www.playframework.com/documentation/2.4.x/ScalaJson) formatters use the `@ResourceWithPlayJson` annotation:
+To use [Play's JSON](https://www.playframework.com/documentation/2.4.x/ScalaJson) formatters use the `@ResourceWithPlayJson` annotation:
 ```scala
 import com.github.pathikrit.metarest.annotations.{ResourceWithPlayJson => Resource,
                                                   get, put, post, patch}
@@ -79,6 +79,13 @@ println(s"REQUEST=$request", s"JSON=$json")
 assert(json.toString == jsonStr)
 ```
 
+You can similarly use [Spray's JSON](https://github.com/spray/spray-json) formatters:
+```scala
+import com.github.pathikrit.metarest.annotations.{ResourceWithSprayJson => Resource}
+```
+
+Consult the [tests](src/test/scala/com/github/pathikrit/metarest/MetaRestSuite.scala) for more examples.
+
 **sbt**
 
 In your `build.sbt`, add the following entries:
@@ -90,11 +97,25 @@ libraryDependencies += "com.github.pathikrit" %% "metarest" % "1.0.0"
 addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0-M5" cross CrossVersion.full)
 ```
 
-If you are using the `@ResourceWithPlayJson` annotation, you may need to add the following libraries:
+If you are using the `@ResourceWithPlayJson` annotation, you may need to add the following:
 ```scala
 libraryDependencies ++= Seq(
   "com.kifi" %% "json-annotation" % "0.1",
-  "com.typesafe.play" %% "play-json" % "2.3.8" // No need to add play-json if you are already using Play 2.1+
+  "com.typesafe.play" %% "play-json" % "2.3.8" // No need to add this if you are already using Play 2.1+
+)
+```
+
+If you are using `@ResourceWithSprayJson` annotation, you may need to add the following:
+```scala
+resolvers ++= Seq(
+  Resolver.typesafeRepo("releases"),
+  "bleibinha.us/archiva releases" at "http://bleibinha.us/archiva/repository/releases",
+  "spray repo" at "repo.spray.io"
+)
+
+libraryDependencies ++= Seq(
+  "us.bleibinha" %% "spray-json-annotation" % "0.4",
+  "io.spray" %% "spray-json" % "1.3.1",  // No need to add this if you are already using Spray
 )
 ```
 
