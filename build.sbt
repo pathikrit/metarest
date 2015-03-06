@@ -16,8 +16,7 @@ scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature", "-language:exper
 
 resolvers ++= Seq(
   Resolver.typesafeRepo("releases"),
-  "bleibinha.us/archiva releases" at "http://bleibinha.us/archiva/repository/releases",
-  "spray repo" at "repo.spray.io"
+  "bleibinha.us/archiva releases" at "http://bleibinha.us/archiva/repository/releases"
 )
 
 libraryDependencies <+= scalaVersion("org.scala-lang" % "scala-reflect" % _)

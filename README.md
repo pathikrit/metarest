@@ -125,10 +125,7 @@ libraryDependencies ++= Seq(
 
 If you are using `@ResourceWithSprayJson` annotation, you may need to add the following:
 ```scala
-resolvers ++= Seq(
-  "bleibinha.us/archiva releases" at "http://bleibinha.us/archiva/repository/releases",
-  "spray repo" at "repo.spray.io"
-)
+resolvers += "bleibinha.us/archiva releases" at "http://bleibinha.us/archiva/repository/releases"
 
 libraryDependencies ++= Seq(
   "us.bleibinha" %% "spray-json-annotation" % "0.4",
@@ -136,4 +133,4 @@ libraryDependencies ++= Seq(
 )
 ```
 
-Although this library works only with Scala 2.11+, you can still find [older versions](https://github.com/pathikrit/metarest/tree/a883c674c67a31f9eddf70797328e864f185a714) of this library that used to support Scala 2.10.x [here](http://dl.bintray.com/pathikrit/maven/com/github/pathikrit).
+Although this library currently only supports Scala 2.11+, [older versions](https://github.com/pathikrit/metarest/tree/a883c674c67a31f9eddf70797328e864f185a714) of this library that used to support Scala 2.10.x are available [here](http://dl.bintray.com/pathikrit/maven/com/github/pathikrit).
