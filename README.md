@@ -82,9 +82,27 @@ assert(json.toString == jsonStr)
 You can similarly use [Spray's JSON](https://github.com/spray/spray-json) formatters by using the `@ResourceWithSprayJson` annotation instead:
 ```scala
 import com.github.pathikrit.metarest.annotations.{ResourceWithSprayJson => Resource}
-```
 
-Consult the [tests](src/test/scala/com/github/pathikrit/metarest/MetaRestSuite.scala) for more examples.
+@Resource case class User(
+  @get               id            : Int,
+  @get @post @patch  name          : String,
+  @get @post         email         : String,
+                     registeredOn  : DateTime
+)
+
+import spray.json._, DefaultJsonProtocol._
+
+val jsonStr: String = """{
+  "name": "Rick",
+  "email": "awesome@msn.com"
+}"""
+
+val request: User.Post = jsonStr.parseJson.convertTo[User.Post]
+val json: JsValue = request.toJson
+
+println(s"REQUEST=$request", s"JSON=$json")
+assert(json.prettyPrint == jsonStr)
+```
 
 **sbt**
 
