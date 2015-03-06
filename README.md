@@ -1,9 +1,8 @@
-MetaRest [![Build Status](https://travis-ci.org/pathikrit/metarest.png?branch=master)](http://travis-ci.org/pathikrit/metarest)
+MetaRest [![Build Status](https://travis-ci.org/pathikrit/metarest.png?branch=master)](http://travis-ci.org/pathikrit/metarest) [![Download](https://api.bintray.com/packages/pathikrit/maven/metarest/images/download.svg)](https://bintray.com/pathikrit/maven/metarest/_latestVersion)
 --------
 Use Scala macros to generate your RESTy models
 
 Let's say you have the following `User` model in your business layer:
-
 ```scala
 case class User(id: Int, name: String, email: String, registeredOn: DateTime)
 ```
@@ -21,12 +20,11 @@ case class UserPatch(name: Option[String])
 ```
 
 That is a lot of boilerplate! Keeping all these request models in sync with your business model and/or adding/removing fields quickly becomes difficult and cumbersome for more complicated models.
-
 With MetaRest, all you need to do is:
 ```scala
-import com.github.pathikrit.MetaRest, MetaRest._
+import com.github.pathikrit.metarest.annotations._
 
-@MetaRest case class User(
+@Resource case class User(
   @get               id            : Int,
   @get @post @patch  name          : String,
   @get @post         email         : String,
@@ -52,16 +50,28 @@ trait UserRepo {
 }
 ```
 
-MetaRest also automatically generates Play's Json formatters for all the models using
-the [json-annotation](https://github.com/kifi/json-annotation) macro:
+**JSON support**
 
+MetaRest can automatically generate various JSON formatters:
+
+To use [Play's JSON](https://www.playframework.com/documentation/2.4.x/ScalaJson) formatters use the `@ResourceWithPlayJson` annotation:
 ```scala
+import com.github.pathikrit.metarest.annotations.{ResourceWithPlayJson => Resource,
+                                                  get, put, post, patch}
+@Resource case class User(
+  @get               id            : Int,
+  @get @post @patch  name          : String,
+  @get @post         email         : String,
+                     registeredOn  : DateTime
+)
+
 import play.api.libs.json.Json
 
 val jsonStr: String = """{
   "name": "Rick",
   "email": "awesome@msn.com"
 }"""
+
 val request: User.Post = Json.parse(jsonStr).as[User.Post]
 val json: JsValue = Json.toJson(request)
 
@@ -69,21 +79,58 @@ println(s"REQUEST=$request", s"JSON=$json")
 assert(json.toString == jsonStr)
 ```
 
-Usage: In your `build.sbt`, add the following entries:
+You can similarly use [Spray's JSON](https://github.com/spray/spray-json) formatters by using the `@ResourceWithSprayJson` annotation instead:
+```scala
+import com.github.pathikrit.metarest.annotations.{ResourceWithSprayJson => Resource}
 
+@Resource case class User(
+  @get               id            : Int,
+  @get @post @patch  name          : String,
+  @get @post         email         : String,
+                     registeredOn  : DateTime
+)
+
+import spray.json._, DefaultJsonProtocol._
+
+val jsonStr: String = """{
+  "name": "Rick",
+  "email": "awesome@msn.com"
+}"""
+
+val request: User.Post = jsonStr.parseJson.convertTo[User.Post]
+val json: JsValue = request.toJson
+
+println(s"REQUEST=$request", s"JSON=$json")
+assert(json.prettyPrint == jsonStr)
+```
+
+**sbt**
+
+In your `build.sbt`, add the following entries:
 ```scala
 resolvers += Resolver.bintrayRepo("pathikrit", "maven")
 
-libraryDependencies ++= Seq(
-  "com.github.pathikrit" %% "metarest" % "0.3.1",
-  "com.kifi" %% "json-annotation" % "0.1",
-  "com.typesafe.play" %% "play-json" % "2.3.8" // No need to add play-json if you are already using Play 2.1+
-)
+libraryDependencies += "com.github.pathikrit" %% "metarest" % "1.0.0"
 
 addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0-M5" cross CrossVersion.full)
 ```
 
-The latest published versions can be found here:
-http://dl.bintray.com/pathikrit/maven/com/github/pathikrit
+If you are using the `@ResourceWithPlayJson` annotation, you may need to add the following:
+```scala
+libraryDependencies ++= Seq(
+  "com.kifi" %% "json-annotation" % "0.1",
+  "com.typesafe.play" %% "play-json" % "2.3.8" // No need to add this if you are already using Play 2.1+
+)
+```
 
-This library has been tested with both Scala 2.10 and 2.11
+If you are using `@ResourceWithSprayJson` annotation, you may need to add the following:
+```scala
+resolvers += "bleibinha.us/archiva releases" at "http://bleibinha.us/archiva/repository/releases"
+
+libraryDependencies ++= Seq(
+  "us.bleibinha" %% "spray-json-annotation" % "0.4",
+  "io.spray" %% "spray-json" % "1.3.1",  // No need to add this if you are already using Spray
+)
+```
+
+Although this library currently only supports Scala 2.11+, [older versions](https://github.com/pathikrit/metarest/tree/a883c674c67a31f9eddf70797328e864f185a714) of this library that used to support Scala 2.10.x are available [here](http://dl.bintray.com/pathikrit/maven/com/github/pathikrit).
