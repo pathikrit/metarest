@@ -1,7 +1,7 @@
 package com.github.pathikrit.metarest
 
-import com.github.pathikrit.macros
 import scala.annotation.StaticAnnotation
+import scala.reflect.macros.blackbox
 
 package object annotations {
   class Resource extends StaticAnnotation {
@@ -26,7 +26,7 @@ package object annotations {
   }
 
   class Macro(jsonMode: Option[JsonMode.Value]) {
-    def impl(c: macros.Context)(annottees: c.Expr[Any]*): c.Expr[Any] = {
+    def impl(c: blackbox.Context)(annottees: c.Expr[Any]*): c.Expr[Any] = {
       import c.universe._
 
       def withCompileError[A](msg: String)(block: => A): A = try block catch {
@@ -47,12 +47,12 @@ package object annotations {
           }
         }
         newFields.groupBy(_._1) map { case (annotation, values) =>
-          val (className, classFields) = (macros.toTypeName(c)(annotation.capitalize), values.map(_._2))
+          val (className, classFields) = (TypeName(annotation.capitalize), values.map(_._2))
           withCompileError("unhandled json mode") {
             jsonMode match {      // TODO: DRY
               case None => q"case class $className(..$classFields)"
               case Some(JsonMode.spray) => q"@us.bleibinha.spray.json.macros.jsonstrict case class $className(..$classFields)"
-              case Some(JsonMode.play) => q"@com.kifi.macros.json case class $className(..$classFields)"    //TODO: Switch back to jsonstrict once this is fixed: https://github.com/kifi/json-annotation/issues/7
+              case Some(JsonMode.play) => q"@com.kifi.macros.jsonstrict case class $className(..$classFields)"
             }
           }
         }
