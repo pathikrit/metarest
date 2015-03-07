@@ -1,4 +1,4 @@
-MetaRest [![CircleCI](https://img.shields.io/circleci/project/pathikrit/metarest.svg)]() [![Download](https://api.bintray.com/packages/pathikrit/maven/metarest/images/download.svg)](https://bintray.com/pathikrit/maven/metarest/_latestVersion)
+MetaRest [![CircleCI](https://img.shields.io/circleci/project/pathikrit/metarest.svg)](https://circleci.com/gh/pathikrit/metarest) [![Download](https://api.bintray.com/packages/pathikrit/maven/metarest/images/download.svg)](https://bintray.com/pathikrit/maven/metarest/_latestVersion)
 --------
 Use Scala macros to generate your RESTy models
 
