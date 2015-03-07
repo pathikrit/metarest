@@ -1,4 +1,4 @@
-MetaRest [![Circle CI](https://circleci.com/gh/pathikrit/metarest.svg?style=svg)](https://circleci.com/gh/pathikrit/metarest) [![Download](https://api.bintray.com/packages/pathikrit/maven/metarest/images/download.svg)](https://bintray.com/pathikrit/maven/metarest/_latestVersion)
+MetaRest [![CircleCI](https://img.shields.io/circleci/project/pathikrit/metarest.svg)]() [![Download](https://api.bintray.com/packages/pathikrit/maven/metarest/images/download.svg)](https://bintray.com/pathikrit/maven/metarest/_latestVersion)
 --------
 Use Scala macros to generate your RESTy models
 
@@ -32,21 +32,24 @@ import com.github.pathikrit.metarest.annotations._
 )
 ```
 
-The above block would generate code essentially looking like this:
+The above annotated code would generate code essentially looking like this:
 ```scala
 object User {
   case class Get(id: Int, name: String, email: String)
   case class Post(name: String, email: String)
-  case class Patch(name: Option[String])
+  case class Patch(name: Option[String])        // Note: all fields in a PATCH are optional
 }
 ```
 
 Now, you can have a well defined CRUD interface for your API:
 ```scala
 trait UserRepo {
+  def getAll: List[User.Get]
   def get(id: Int): User.Get
   def create(request: User.Post): User.Get
+  def replace(id: Int, request: User.Put): User.Get
   def update(id: Int, request: User.Patch): User.Get
+  def delete(id: Int): User.Get
 }
 ```
 
