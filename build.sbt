@@ -1,6 +1,6 @@
 name := "metarest"
 
-version := "1.0.0"
+version := "2.0.0"
 
 description := "Scala macros to generate RESTy models"
 
@@ -15,8 +15,7 @@ crossScalaVersions := Seq("2.11.0", "2.11.1", "2.11.2", "2.11.4", "2.11.5")
 scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature", "-language:experimental.macros")
 
 resolvers ++= Seq(
-  Resolver.typesafeRepo("releases"),
-  "bleibinha.us/archiva releases" at "http://bleibinha.us/archiva/repository/releases"
+  Resolver.typesafeRepo("releases")
 )
 
 libraryDependencies <+= scalaVersion("org.scala-lang" % "scala-reflect" % _)

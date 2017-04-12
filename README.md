@@ -64,22 +64,4 @@ libraryDependencies += "com.github.pathikrit" %% "metarest" % "1.0.0"
 addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0-M5" cross CrossVersion.full)
 ```
 
-If you are using the `@ResourceWithPlayJson` annotation, you may need to add the following:
-```scala
-libraryDependencies ++= Seq(
-  "com.kifi" %% "json-annotation" % "0.2",
-  "com.typesafe.play" %% "play-json" % "2.3.8" // No need to add this if you are already using Play 2.1+
-)
-```
-
-If you are using `@ResourceWithSprayJson` annotation, you may need to add the following:
-```scala
-resolvers += "bleibinha.us/archiva releases" at "http://bleibinha.us/archiva/repository/releases"
-
-libraryDependencies ++= Seq(
-  "us.bleibinha" %% "spray-json-annotation" % "0.4",
-  "io.spray" %% "spray-json" % "1.3.1",  // No need to add this if you are already using Spray
-)
-```
-
 Although this library currently only supports Scala 2.11+, [older versions](https://github.com/pathikrit/metarest/tree/a883c674c67a31f9eddf70797328e864f185a714) of this library that used to support Scala 2.10.x are available [here](http://dl.bintray.com/pathikrit/maven/com/github/pathikrit).
