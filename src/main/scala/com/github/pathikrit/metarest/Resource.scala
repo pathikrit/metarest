@@ -14,32 +14,32 @@ class Resource extends StaticAnnotation {
   inline def apply(defn: Any): Any = meta {
     val (cls: Defn.Class, companion: Defn.Object) = defn match {
       case Term.Block(Seq(cls: Defn.Class, companion: Defn.Object)) => (cls, companion)
-      case cls @ Defn.Class(_, name, _, _, _) => (cls, q"object ${Term.Name(name.value)} {}")
+      case cls: Defn.Class => (cls, q"object ${Term.Name(cls.name.value)} {}")
       case _ => abort("@metarest.Resource must annotate a class")
     }
 
-    val Ctor.Primary(_, _, paramss) = cls.ctor
-
-    val fieldsWithModifier = for {
-      Term.Param(mods, name, decltype, default) <- paramss.flatten
+    val paramsWithAnnotation = for {
+      Term.Param(mods, name, decltype, default) <- cls.ctor.paramss.flatten
       modifier <- mods
-    } yield modifier match {
-      case mod"@get" | mod"@put" | mod"@post" => Some(modifier -> Term.Param(Nil, name, decltype, default))
-      case mod"@patch" => Some(modifier -> Term.Param(Nil, name, decltype, None))
-      case _ => None
-    }
+      newField <- modifier match {
+        case mod"@get" | mod"@put" | mod"@post" => Some(Term.Param(Nil, name, decltype, default))
+        case mod"@patch" => Some(Term.Param(Nil, name, decltype, None))
+        case _ => None
+      }
+      verb = modifier.toString
+    } yield verb -> newField
 
-    val fields = fieldsWithModifier.flatten
-      .groupBy({case (mod, _) => mod.toString.stripPrefix("@").capitalize})
-      .mapValues(values => values.map(_._2))
-
-    val newFields = fields map { case (className, classParams) =>
-      q"case class ${Type.Name(className)}(..$classParams)"
-    }
+    val models = paramsWithAnnotation
+      .groupBy(_._1)
+      .map({ case (verb, pairs) =>
+        val className = Type.Name(verb.stripPrefix("@").capitalize)
+        val classParams = pairs.map(_._2)
+        q"case class $className(..$classParams)"
+      })
 
     val newCompanion = companion.copy(
       templ = companion.templ.copy(stats = Some(
-        companion.templ.stats.getOrElse(Nil) ++ newFields
+        companion.templ.stats.getOrElse(Nil) ++ models
       ))
     )
 
