@@ -8,9 +8,9 @@ licenses += ("MIT", url("http://opensource.org/licenses/MIT"))
 
 organization := "com.github.pathikrit"
 
-scalaVersion := "2.11.5"
+scalaVersion := "2.11.8"
 
-crossScalaVersions := Seq("2.11.0", "2.11.1", "2.11.2", "2.11.4", "2.11.5")
+crossScalaVersions := Seq("2.11.8")
 
 scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature", "-language:experimental.macros")
 
@@ -21,9 +21,7 @@ resolvers ++= Seq(
 libraryDependencies <+= scalaVersion("org.scala-lang" % "scala-reflect" % _)
 
 libraryDependencies ++= Seq(
-  "org.scalatest" %% "scalatest" % "2.2.4" % Test
+  "org.scalatest" %% "scalatest" % "3.0.1" % Test
 )
 
-addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0-M5" cross CrossVersion.full)
-
-seq(bintraySettings:_*)
+addCompilerPlugin("org.scalameta" % "paradise" % "3.0.0-M7" cross CrossVersion.full)
