@@ -22,11 +22,7 @@ resolvers ++= Seq(
 libraryDependencies <+= scalaVersion("org.scala-lang" % "scala-reflect" % _)
 
 libraryDependencies ++= Seq(
-  "org.scalatest" %% "scalatest" % "2.2.4" % Test,
-  "com.kifi" %% "json-annotation" % "0.2" % Test,
-  "com.typesafe.play" %% "play-json" % "2.3.8" % Test,
-  "us.bleibinha" %% "spray-json-annotation" % "0.4" % Test,
-  "io.spray" %% "spray-json" % "1.3.1" % Test
+  "org.scalatest" %% "scalatest" % "2.2.4" % Test
 )
 
 addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0-M5" cross CrossVersion.full)

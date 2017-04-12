@@ -53,60 +53,6 @@ trait UserRepo {
 }
 ```
 
-**JSON Support**
-
-MetaRest can automatically generate various JSON formatters:
-
-To use [Play's JSON](https://www.playframework.com/documentation/2.4.x/ScalaJson) formatters use the `@ResourceWithPlayJson` annotation:
-```scala
-import com.github.pathikrit.metarest.annotations.{ResourceWithPlayJson => Resource,
-                                                  get, put, post, patch}
-@Resource case class User(
-  @get               id            : Int,
-  @get @post @patch  name          : String,
-  @get @post         email         : String,
-                     registeredOn  : DateTime
-)
-
-import play.api.libs.json.Json
-
-val jsonStr: String = """{
-  "name": "Rick",
-  "email": "awesome@msn.com"
-}"""
-
-val request: User.Post = Json.parse(jsonStr).as[User.Post]
-val json: JsValue = Json.toJson(request)
-
-println(s"REQUEST=$request", s"JSON=$json")
-assert(json.toString == jsonStr)
-```
-
-You can similarly use [Spray's JSON](https://github.com/spray/spray-json) formatters by using the `@ResourceWithSprayJson` annotation instead:
-```scala
-import com.github.pathikrit.metarest.annotations.{ResourceWithSprayJson => Resource,
-                                                  get, put, post, patch}
-@Resource case class User(
-  @get               id            : Int,
-  @get @post @patch  name          : String,
-  @get @post         email         : String,
-                     registeredOn  : DateTime
-)
-
-import spray.json._, DefaultJsonProtocol._
-
-val jsonStr: String = """{
-  "name": "Rick",
-  "email": "awesome@msn.com"
-}"""
-
-val request: User.Post = jsonStr.parseJson.convertTo[User.Post]
-val json: JsValue = request.toJson
-
-println(s"REQUEST=$request", s"JSON=$json")
-assert(json.prettyPrint == jsonStr)
-```
-
 **sbt**
 
 In your `build.sbt`, add the following entries:

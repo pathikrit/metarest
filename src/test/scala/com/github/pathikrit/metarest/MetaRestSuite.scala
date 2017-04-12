@@ -18,61 +18,10 @@ class MetaRestSuite extends FunSuite {
     """User.Put()""" shouldNot compile
     """User.Patch(name = Some("Pathikrit"))""" should compile
     """User.Patch()""" should compile
-
-    """play.api.libs.json.Json.toJson(User.Post(name = "Rick", email = "awesome@msn.com"))""" shouldNot compile
-  }
-
-  test("Play Json") {
-    import com.github.pathikrit.metarest.annotations.{ResourceWithPlayJson => Resource, get, put, post, patch}
-
-    import play.api.libs.json.{Json, Reads, Writes}
-    def testJsonRoundTrip[A: Reads : Writes](model: A) = Json.parse(Json.toJson(model).toString()).as[A] shouldEqual model
-
-    @Resource case class User(
-      @get                id            : Int,
-      @get @post @patch   name          : String,
-      @get @post          email         : String,
-                          registeredOn  : Long
-    )
-
-    testJsonRoundTrip(User.Get(id = 0, name = "Rick", email = "awesome@msn.com"))
-    testJsonRoundTrip(User.Post(name = "Rick", email = "awesome@msn.com"))
-    "User.Put()" shouldNot compile
-    testJsonRoundTrip(User.Patch(name = Some("Pathikrit")))
-    "User.Patch()" should compile
-  }
-
-  test("Spray Json") {
-    import com.github.pathikrit.metarest.annotations.{ResourceWithSprayJson => Resource, get, put, post, patch}
-
-    import spray.json._, DefaultJsonProtocol._
-    def testJsonRoundTrip[A: JsonFormat](model: A) = model.toJson.prettyPrint.parseJson.convertTo[A] shouldEqual model
-
-    @Resource case class User(
-      @get                id            : Int,
-      @get @post @patch   name          : String,
-      @get @post          email         : String,
-                          registeredOn  : Long
-    )
-
-    testJsonRoundTrip(User.Get(id = 0, name = "Rick", email = "awesome@msn.com"))
-    testJsonRoundTrip(User.Post(name = "Rick", email = "awesome@msn.com"))
-    "User.Put()" shouldNot compile
-    testJsonRoundTrip(User.Patch(name = Some("Pathikrit")))
-    "User.Patch()" should compile
-  }
-
-  test("Non case classes") {
-    import com.github.pathikrit.metarest.annotations.{Resource, get, put, post, patch}
-
-    "@Resource class A" shouldNot compile
-    "@Resource trait A" shouldNot compile
-    "@Resource case class A()" should compile
-    "@Resource object A" shouldNot compile
   }
 
   todo("Complex models") {
-    import com.github.pathikrit.metarest.annotations.{Resource, get, put, post, patch}
+    import com.github.pathikrit.metarest.annotations._
 
     class GET extends scala.annotation.StaticAnnotation
 

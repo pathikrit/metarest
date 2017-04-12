@@ -5,15 +5,7 @@ import scala.reflect.macros.blackbox
 
 package object annotations {
   class Resource extends StaticAnnotation {
-    def macroTransform(annottees: Any*): Any = macro Macro.noJson.impl
-  }
-
-  class ResourceWithPlayJson extends StaticAnnotation {
-    def macroTransform(annottees: Any*): Any = macro Macro.playJson.impl
-  }
-
-  class ResourceWithSprayJson extends StaticAnnotation {
-    def macroTransform(annottees: Any*): Any = macro Macro.sprayJson.impl
+    def macroTransform(annottees: Any*): Any = macro Macro.impl
   }
 
   class get extends StaticAnnotation
@@ -21,21 +13,9 @@ package object annotations {
   class post extends StaticAnnotation
   class patch extends StaticAnnotation
 
-  object JsonMode extends Enumeration {
-    val play, spray = Value
-  }
-
-  class Macro(jsonMode: Option[JsonMode.Value]) {
+  object Macro {
     def impl(c: blackbox.Context)(annottees: c.Expr[Any]*): c.Expr[Any] = {
       import c.universe._
-
-      def annotate(className: TypeName, classFields: List[ValDef]) = withCompileError("unhandled json mode") {
-        jsonMode match {      // TODO: DRY - should just pass in q"case class $className(..$classFields)"
-          case None => q"case class $className(..$classFields)"
-          case Some(JsonMode.spray) => q"@us.bleibinha.spray.json.macros.jsonstrict case class $className(..$classFields)"
-          case Some(JsonMode.play) => q"@com.kifi.macros.jsonstrict case class $className(..$classFields)"
-        }
-      }
 
       def withCompileError[A](msg: String)(block: => A): A = try block catch {
         case e: MatchError => c.abort(c.enclosingPosition, s"MetaRest: $msg; Got: $e")
@@ -56,7 +36,7 @@ package object annotations {
         }
         newFields.groupBy(_._1) map { case (annotation, values) =>
           val (className, classFields) = (TypeName(annotation.capitalize), values.map(_._2))
-          annotate(className, classFields)
+          q"case class $className(..$classFields)"
         }
       }
 
@@ -92,11 +72,5 @@ package object annotations {
         }
       }
     }
-  }
-
-  object Macro {
-    object noJson extends Macro(None)
-    object playJson extends Macro(Some(JsonMode.play))
-    object sprayJson extends Macro(Some(JsonMode.spray))
   }
 }
