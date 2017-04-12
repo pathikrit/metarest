@@ -23,7 +23,9 @@ class Resource extends StaticAnnotation {
       modifier <- mods
       newField <- modifier match {
         case mod"@get" | mod"@put" | mod"@post" => Some(Term.Param(Nil, name, decltype, default))
-        case mod"@patch" => Some(Term.Param(Nil, name, decltype, None))
+        case mod"@patch" =>
+          val optDeclType = decltype.collect({case tpe: Type => targ"Option[$tpe]"})
+          Some(Term.Param(Nil, name, optDeclType, Some(q"None")))
         case _ => None
       }
       verb = modifier.toString
