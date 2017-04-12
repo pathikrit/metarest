@@ -1,11 +1,10 @@
 package com.github.pathikrit.metarest
 
 import org.scalatest._, Matchers._
+import com.github.pathikrit.metarest._
 
 class MetaRestSuite extends FunSuite {
   test("Generation of Get, Post, Patch, Put models") {
-    import com.github.pathikrit.metarest.annotations.{Resource, get, put, post, patch}
-
     @Resource case class User(
       @get                id            : Int,
       @get @post @patch   name          : String,
@@ -20,9 +19,7 @@ class MetaRestSuite extends FunSuite {
     """User.Patch()""" should compile
   }
 
-  todo("Complex models") {
-    import com.github.pathikrit.metarest.annotations._
-
+  test("Complex models") {
     class GET extends scala.annotation.StaticAnnotation
 
     sealed trait Document {
@@ -44,7 +41,5 @@ class MetaRestSuite extends FunSuite {
       override type Data = A
     }
   }
-
-  private[this] def todo(msg: String)(f: => Unit) = println(s"TODO: $msg")
 }
 

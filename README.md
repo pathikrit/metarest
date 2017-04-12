@@ -22,7 +22,7 @@ case class UserPatch(name: Option[String])
 That is a lot of boilerplate! Keeping all these request models in sync with your business model and/or adding/removing fields quickly becomes tedious for more complicated models.
 With MetaRest, all you need to do is:
 ```scala
-import com.github.pathikrit.metarest.annotations._
+import com.github.pathikrit.metarest._
 
 @Resource case class User(
   @get               id            : Int,
