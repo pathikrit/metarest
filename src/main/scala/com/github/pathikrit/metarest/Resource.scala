@@ -1,6 +1,7 @@
 package com.github.pathikrit.metarest
 
 import scala.collection.immutable.Seq
+import scala.collection.mutable
 import scala.annotation.{StaticAnnotation, compileTimeOnly}
 import scala.meta._
 
@@ -20,14 +21,15 @@ class Resource extends StaticAnnotation {
 
     val paramsWithAnnotation = for {
       Term.Param(mods, name, decltype, default) <- cls.ctor.paramss.flatten
-      modifier <- mods
+      seenMods = mutable.Set.empty[String]
+      modifier <- mods if seenMods.add(modifier.toString)
       newField <- modifier match {
         case mod"@get" | mod"@put" | mod"@post" => Some(Term.Param(Nil, name, decltype, default))
         case mod"@patch" =>
           val optDeclType = decltype.collect({case tpe: Type => targ"Option[$tpe]"})
           val defaultArg = default match {
             case Some(term) => q"Some($term)"
-            case _ => q"None"
+            case None => q"None"
           }
           Some(Term.Param(Nil, name, optDeclType, Some(defaultArg)))
         case _ => None
@@ -38,7 +40,7 @@ class Resource extends StaticAnnotation {
       .groupBy(_._1.toString)
       .map({case (verb, pairs) =>
         val className = Type.Name(verb.stripPrefix("@").capitalize)
-        val classParams = pairs.map(_._2).groupBy(_.name.value).mapValues(_.head).values.to[collection.immutable.Seq]
+        val classParams = pairs.map(_._2)
         q"case class $className[..${cls.tparams}] (..$classParams)"
       })
 
