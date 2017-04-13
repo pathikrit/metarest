@@ -25,14 +25,17 @@ class Resource extends StaticAnnotation {
         case mod"@get" | mod"@put" | mod"@post" => Some(Term.Param(Nil, name, decltype, default))
         case mod"@patch" =>
           val optDeclType = decltype.collect({case tpe: Type => targ"Option[$tpe]"})
-          Some(Term.Param(Nil, name, optDeclType, Some(q"None")))
+          val defaultArg = default match {
+            case Some(term) => q"Some($term)"
+            case _ => q"None"
+          }
+          Some(Term.Param(Nil, name, optDeclType, Some(defaultArg)))
         case _ => None
       }
-      verb = modifier.toString
-    } yield verb -> newField
+    } yield modifier -> newField
 
     val models = paramsWithAnnotation
-      .groupBy(_._1)
+      .groupBy(_._1.toString)
       .map({ case (verb, pairs) =>
         val className = Type.Name(verb.stripPrefix("@").capitalize)
         val classParams = pairs.map(_._2)
