@@ -36,10 +36,10 @@ class Resource extends StaticAnnotation {
 
     val models = paramsWithAnnotation
       .groupBy(_._1.toString)
-      .map({ case (verb, pairs) =>
+      .map({case (verb, pairs) =>
         val className = Type.Name(verb.stripPrefix("@").capitalize)
-        val classParams = pairs.map(_._2)
-        q"case class $className(..$classParams)"
+        val classParams = pairs.map(_._2).groupBy(_.name.value).mapValues(_.head).values.to[collection.immutable.Seq]
+        q"case class $className[..${cls.tparams}] (..$classParams)"
       })
 
     val newCompanion = companion.copy(
