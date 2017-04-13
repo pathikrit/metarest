@@ -23,18 +23,18 @@ class Resource extends StaticAnnotation {
       Term.Param(mods, name, decltype, default) <- cls.ctor.paramss.flatten
       seenMods = mutable.Set.empty[String]
       modifier <- mods if seenMods.add(modifier.toString)
-      newField <- modifier match {
-        case mod"@get" | mod"@put" | mod"@post" => Some(Term.Param(Nil, name, decltype, default))
+      (tpe, defArg) <- modifier match {
+        case mod"@get" | mod"@put" | mod"@post" => Some(decltype -> default)
         case mod"@patch" =>
           val optDeclType = decltype.collect({case tpe: Type => targ"Option[$tpe]"})
           val defaultArg = default match {
             case Some(term) => q"Some($term)"
             case None => q"None"
           }
-          Some(Term.Param(Nil, name, optDeclType, Some(defaultArg)))
+          Some(optDeclType -> Some(defaultArg))
         case _ => None
       }
-    } yield modifier -> newField
+    } yield modifier -> Term.Param(Nil, name, tpe, defArg)
 
     val models = paramsWithAnnotation
       .groupBy(_._1.toString)
