@@ -1,8 +1,7 @@
 package com.github.pathikrit.metarest
 
-import scala.collection.immutable.Seq
+import scala.annotation.StaticAnnotation
 import scala.collection.mutable
-import scala.annotation.{StaticAnnotation, compileTimeOnly}
 import scala.meta._
 
 class get extends StaticAnnotation
@@ -10,12 +9,11 @@ class put extends StaticAnnotation
 class post extends StaticAnnotation
 class patch extends StaticAnnotation
 
-@compileTimeOnly("@metarest.Resource not expanded")
 class Resource extends StaticAnnotation {
   inline def apply(defn: Any): Any = meta {
     val (cls: Defn.Class, companion: Defn.Object) = defn match {
-      case Term.Block(Seq(cls: Defn.Class, companion: Defn.Object)) => (cls, companion)
-      case cls: Defn.Class => (cls, q"object ${Term.Name(cls.name.value)} {}")
+      case q"${cls: Defn.Class}; ${companion: Defn.Object}" => (cls, companion)
+      case q"${cls: Defn.Class}" => (cls, q"object ${Term.Name(cls.name.value)} {}")
       case _ => abort("@metarest.Resource must annotate a class")
     }
 
@@ -50,6 +48,6 @@ class Resource extends StaticAnnotation {
       ))
     )
 
-    Term.Block(Seq(cls, newCompanion))
+    q"$cls; $newCompanion"
   }
 }
