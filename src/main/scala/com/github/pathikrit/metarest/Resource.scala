@@ -13,7 +13,7 @@ class Resource extends StaticAnnotation {
   inline def apply(defn: Any): Any = meta {
     val (cls: Defn.Class, companion: Defn.Object) = defn match {
       case q"${cls: Defn.Class}; ${companion: Defn.Object}" => (cls, companion)
-      case q"${cls: Defn.Class}" => (cls, q"object ${Term.Name(cls.name.value)} {}")
+      case cls: Defn.Class => (cls, q"object ${Term.Name(cls.name.value)} {}")
       case _ => abort("@metarest.Resource must annotate a class")
     }
 
@@ -32,7 +32,7 @@ class Resource extends StaticAnnotation {
           Some(optDeclType -> Some(defaultArg))
         case _ => None
       }
-    } yield modifier -> Term.Param(Nil, name, tpe, defArg)
+    } yield modifier -> param"$name: $tpe = $defArg"
 
     val models = paramsWithAnnotation
       .groupBy(_._1.toString)
