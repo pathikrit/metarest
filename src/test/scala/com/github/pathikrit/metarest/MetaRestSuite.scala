@@ -41,6 +41,8 @@ class MetaRestSuite extends FunSuite {
     }
 
     Email.Get(id = 0, state = "hello", subject = "subject", to = List("me"))
+
+    """@Resource val x = 10""" shouldNot compile
   }
 }
 

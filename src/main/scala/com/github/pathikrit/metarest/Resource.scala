@@ -11,41 +11,42 @@ class patch extends StaticAnnotation
 
 class Resource extends StaticAnnotation {
   inline def apply(defn: Any): Any = meta {
-    val (cls: Defn.Class, companion: Defn.Object) = defn match {
+    val (cls, companion) = defn match {
       case q"${cls: Defn.Class}; ${companion: Defn.Object}" => (cls, companion)
       case cls: Defn.Class => (cls, q"object ${Term.Name(cls.name.value)} {}")
       case _ => abort("@metarest.Resource must annotate a class")
     }
 
     val paramsWithAnnotation = for {
-      Term.Param(mods, name, decltype, default) <- cls.ctor.paramss.flatten
+      param <- cls.ctor.paramss.flatten
       seenMods = mutable.Set.empty[String]
-      modifier <- mods if seenMods.add(modifier.toString)
-      (tpe, defArg) <- modifier match {
-        case mod"@get" | mod"@put" | mod"@post" => Some(decltype -> default)
+      modifier <- param.mods if seenMods.add(modifier.toString)
+      newParam <- modifier match {
+        case mod"@get" | mod"@put" | mod"@post" => Some(param.copy(mods = Nil))
         case mod"@patch" =>
-          val optDeclType = decltype.collect({case tpe: Type => targ"Option[$tpe]"})
-          val defaultArg = default match {
+          val tpe = param.decltpe.get.asInstanceOf[Type]
+          val defaultArg = param.default match {
             case Some(term) => q"Some($term)"
             case None => q"None"
           }
-          Some(optDeclType -> Some(defaultArg))
+          Some(param"${param.name}: Option[$tpe] = ${defaultArg}")
         case _ => None
       }
-    } yield modifier -> param"$name: $tpe = $defArg"
+    } yield modifier -> newParam
 
-    val models = paramsWithAnnotation
-      .groupBy(_._1.toString)
-      .map({case (verb, pairs) =>
-        val className = Type.Name(verb.stripPrefix("@").capitalize)
-        val classParams = pairs.map(_._2)
-        q"case class $className[..${cls.tparams}] (..$classParams)"
-      })
+    val grouped = paramsWithAnnotation
+      .groupBy(_._1.toString())
+      .mapValues(_.map(_._2))
+
+    val models = grouped.map({case (annotation, classParams) =>
+      val className = Type.Name(annotation.stripPrefix("@").capitalize)
+      q"case class ${className}[..${cls.tparams}] (..$classParams)"
+    })
 
     val newCompanion = companion.copy(
-      templ = companion.templ.copy(stats = Some(
-        companion.templ.stats.getOrElse(Nil) ++ models
-      ))
+      templ = companion.templ.copy(
+        stats = Some(companion.templ.stats.getOrElse(Nil) ++ models)
+      )
     )
 
     q"$cls; $newCompanion"
