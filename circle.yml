@@ -1,6 +1,0 @@
-machine:
-    version: oraclejdk8
-
-test:
-  override:
-    - sbt +test

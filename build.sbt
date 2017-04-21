@@ -1,29 +1,11 @@
 name := "metarest"
-
 version := "2.0.0"
-
 description := "Scala macros to generate RESTy models"
-
-licenses += ("MIT", url("http://opensource.org/licenses/MIT"))
-
 organization := "com.github.pathikrit"
-
-scalaVersion := "2.11.5"
-
-crossScalaVersions := Seq("2.11.0", "2.11.1", "2.11.2", "2.11.4", "2.11.5")
-
-scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature", "-language:experimental.macros")
-
-resolvers ++= Seq(
-  Resolver.typesafeRepo("releases")
-)
-
-libraryDependencies <+= scalaVersion("org.scala-lang" % "scala-reflect" % _)
-
+scalaVersion := "2.12.1"
+scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
 libraryDependencies ++= Seq(
-  "org.scalatest" %% "scalatest" % "2.2.4" % Test
+  "org.scalameta" %% "scalameta" % "1.7.0",
+  "org.scalatest" %% "scalatest" % "3.0.1" % Test
 )
-
-addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0-M5" cross CrossVersion.full)
-
-seq(bintraySettings:_*)
+addCompilerPlugin("org.scalameta" % "paradise" % "3.0.0-M8" cross CrossVersion.full)

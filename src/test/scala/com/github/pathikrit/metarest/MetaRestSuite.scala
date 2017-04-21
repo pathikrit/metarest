@@ -1,7 +1,6 @@
 package com.github.pathikrit.metarest
 
 import org.scalatest._, Matchers._
-import com.github.pathikrit.metarest._
 
 class MetaRestSuite extends FunSuite {
   test("Generation of Get, Post, Patch, Put models") {
@@ -27,7 +26,7 @@ class MetaRestSuite extends FunSuite {
       type Data
     }
 
-    /*@Resource*/ case class Email[A, B](
+    @Resource case class Email[A, B](
       @get @get override val id: Int,
       @get state: String,
       @get @post @patch subject: String,
@@ -40,6 +39,8 @@ class MetaRestSuite extends FunSuite {
     ) extends Document {
       override type Data = A
     }
+
+    Email.Get(id = 0, state = "hello", subject = "subject", to = List("me"))
   }
 }
 
