@@ -13,7 +13,7 @@ class Resource extends StaticAnnotation {
   inline def apply(defn: Any): Any = meta {
     val (cls, companion) = defn match {
       case q"${cls: Defn.Class}; ${companion: Defn.Object}" => (cls, companion)
-      case cls: Defn.Class => (cls, q"object ${Term.Name(cls.name.value)} {}")
+      case cls: Defn.Class => (cls, q"object ${Term.Name(cls.name.value)}")
       case _ => abort("@metarest.Resource must annotate a class")
     }
 

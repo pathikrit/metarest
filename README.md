@@ -59,9 +59,9 @@ In your `build.sbt`, add the following entries:
 ```scala
 resolvers += Resolver.bintrayRepo("pathikrit", "maven")
 
-libraryDependencies += "com.github.pathikrit" %% "metarest" % "1.0.0"
+libraryDependencies += "com.github.pathikrit" %% "metarest" % "2.0.0"
 
-addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0-M5" cross CrossVersion.full)
+addCompilerPlugin("org.scalameta" % "paradise" % "3.0.0-M8" cross CrossVersion.full)
 ```
 
 Although this library currently only supports Scala 2.11+, [older versions](https://github.com/pathikrit/metarest/tree/a883c674c67a31f9eddf70797328e864f185a714) of this library that used to support Scala 2.10.x are available [here](http://dl.bintray.com/pathikrit/maven/com/github/pathikrit).
